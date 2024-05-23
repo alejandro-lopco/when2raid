@@ -8,7 +8,7 @@ def setupMainGUI():
         [sg.Text("Nombre de usuario:")],
         [sg.Input(key='-USER-')],
         [sg.Text("Contraseña")],
-        [sg.Input(key='-PASS-')],
+        [sg.Input(key='-PASS-',password_char='*')],
         [sg.Button('Iniciar Sesión'),sg.Button('Crear Usuario'),sg.Button('Configuración BBDD')],
         [sg.Text('',key='-CONF-')] # Muestra de mensajes 
     ]
@@ -24,7 +24,7 @@ def setupUserGUI():
         [sg.Text("Nombre de usuario:")],
         [sg.Input(key='-USER-')],
         [sg.Text("Contraseña")],
-        [sg.Input(key='-PASS-')],
+        [sg.Input(key='-PASS-',password_char='*')],
         [sg.Text("Nombre Completo")],
         [sg.Input(key='-FULLNAME-')],
         [sg.Button('Crear Usuario')],
@@ -42,13 +42,14 @@ def main():
         event, values = window.read()
 
         if event == 'Iniciar Sesión':
-            global confDB
+            global cnxDB
 
             if db.checkLogin(values['-USER-'],values['-PASS-']):
-                confDB = db.loginDB(values['-USER-'],values['-PASS-'])
+                cnxDB = db.loginDB()
 
-                window['-CONF-'].update('Ha iniciado sesión correctamente')
-                window['-CONF-'].update(text_color='Light Green')
+                if cnxDB is not None:
+                    window['-CONF-'].update(f'Ha iniciado sesión correctamente con:{values['-USER-']}')
+                    window['-CONF-'].update(text_color='Light Green')
 
             else:
                 window['-CONF-'].update('Nombre de usuario o contraseña incorrecto')

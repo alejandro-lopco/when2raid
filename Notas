@@ -1,9 +1,0 @@
-#POR HACER TODAVÍA
-    
-#HACIENDO AHORA
-    -   El proceso de login
-    -   Crear Usuarios
-#HECHO
-    -   Actualizar los roles de la BBDD local
-    -   Parseo de Config (Escalable con más opciones)
-    -   Parsear las opciones para cogerlas directamente del archivo .ini
