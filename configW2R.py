@@ -20,12 +20,13 @@ def getCnf():
 
 
 def setupGUI():
+    config = getCnf()
     # Esquema de la ventana
     layout = [
         [sg.Text("Hostname de la base de datos:")],
-        [sg.Input(key='-HOSTNAME-',default_text=conf['DATABASE']['hostname'])],
+        [sg.Input(key='-HOSTNAME-',default_text=config['DATABASE']['hostname'])],
         [sg.Text("Puerto")],
-        [sg.Input(key='-PUERTO-',default_text=conf['DATABASE']['port'])],
+        [sg.Input(key='-PUERTO-',default_text=config['DATABASE']['port'])],
         [sg.Button('Guardar Configuración')],
         [sg.Text('',key='-CONF-')]
     ]

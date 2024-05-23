@@ -59,17 +59,21 @@ def main():
 
         if event == 'Crear Usuario':
             windowUser = setupUserGUI()
-            # Cambio completo del layout previo
+            # Generamos una nueva ventana
             while True:
                 eventUser, valuesUser = windowUser.read()
 
                 if eventUser == 'Crear Usuario':
-                    if db.checkUser(windowUser['-USER-']):
-                        db.addUsr(windowUser['-USER-'],windowUser['-PASS-'],windowUser['-FULLNAME-'])
+                    if db.checkUser(valuesUser['-USER-']) is False:
+                        if db.addUsr(valuesUser['-USER-'],valuesUser['-PASS-'],valuesUser['-FULLNAME-']):
+                            windowUser['-CONF-'].update('Usuario creado correctamente')
+                            windowUser['-CONF-'].update(text_color='Light Green')
+                        else:
+                            windowUser['-CONF-'].update('Error en la creación del usuario')
+                            windowUser['-CONF-'].update(text_color='Black')
                     else:
                         windowUser['-CONF-'].update('Usuario ya existente')
                         windowUser['-CONF-'].update(text_color='Black')
-
                 if eventUser == sg.WIN_CLOSED:
                     break
 
