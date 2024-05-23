@@ -11,9 +11,9 @@ def loginDB():
             host    =conf['DATABASE']['hostname'],
             database='when2raid',
             user    ='usuario_final',
-            password='Final_User'
+            password=''
         )
-        if cnx.is_connected():
+        if cnx is not None:
             return cnx
         else:
             return None
@@ -24,18 +24,19 @@ def loginDB():
     
 def checkUser(username):
     try:
+        global cnx
         # Nos conectamos a la base de datos
         cnx = mysql.connector.connect(
             host    =conf['DATABASE']['hostname'],
             database='when2raid',
             user    ='usario_limitado',
-            password='creador_usuario'
+            password=''
         )
-        if cnx.is_connected():
+        if cnx is not None:
             cursor = cnx.cursor()
 
             query = "SELECT COUNT(*) FROM usuarios WHERE nombre_usuario = %s;"
-            cursor.execute(query,(username))
+            cursor.execute(query,(username,))
 
             rslt = cursor.fetchone()
 
@@ -46,10 +47,10 @@ def checkUser(username):
 
     except Error as ErrorConexion:
         print(ErrorConexion)
-        return False
+        return None
     
     finally:
-        if cnx.is_connected():
+        if cnx is not None:
             cursor.close()
             cnx.close() 
 
@@ -60,13 +61,13 @@ def checkLogin(username, passwd):
             host    =conf['DATABASE']['hostname'],
             database='when2raid',
             user    ='usario_limitado',
-            password='creador_usuario'
+            password=''
         )
-        if cnx.is_connected():
+        if cnx is not None:
             cursor = cnx.cursor()
 
             query = "SELECT COUNT(*) FROM usuarios WHERE nombre_usuario = %s AND passwd_usuario = %s;"
-            cursor.execute(query,(username,passwd))
+            cursor.execute(query,(username,passwd,))
 
             rslt = cursor.fetchone()
 
@@ -80,7 +81,7 @@ def checkLogin(username, passwd):
         return False
     
     finally:
-        if cnx.is_connected():
+        if cnx is not None:
             cursor.close()
             cnx.close()
 
@@ -91,18 +92,24 @@ def addUsr(username, passwd, fullName):
             host    =conf['DATABASE']['hostname'],
             database='when2raid',
             user    ='usario_limitado',
-            password='creador_usuario'
+            password=''
         )
-        if cnx.is_connected():
+        if cnx is not None:
             cursor = cnx.cursor()
-            query = "INSERT INTO usuarios (nombre_usuario,passwd_usuario,nombre_completo) VALUES (%s,%s,%s);"
+            print(f"Username: {username}, Password: {passwd}, Full Name: {fullName}")
+            query = "INSERT INTO usuarios VALUES (%s,%s,%s);"
+
             cursor.execute(query,(username,passwd,fullName))
+
+            cnx.commit()
+
+            return True 
 
     except Error as ErrorConexion:
         print(ErrorConexion)
         return False
 
     finally:
-        if cnx.is_connected():
+        if cnx is not None:
             cursor.close()
             cnx.close()

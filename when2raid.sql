@@ -1,3 +1,5 @@
+-- Plantilla par la base de datos general, debe funcionar en local y en la nube
+-- Puede cambiar...
 DROP DATABASE IF exists when2raid;
 CREATE DATABASE when2raid;
 -- Creación de tablas
@@ -43,14 +45,12 @@ CREATE TABLE log_actividades (
     id_actividad INT NOT NULL,
     usuario VARCHAR(16) DEFAULT USER(),
     fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-    accion VARCHAR(64) NOT NULL,
     FOREIGN KEY (id_actividad) REFERENCES actividades(id_actividad)
 ) ENGINE=INNODB;
 CREATE TABLE log_usuarios (
     id_log INT AUTO_INCREMENT PRIMARY KEY,
     nombre_usuario VARCHAR(16) DEFAULT USER(),
-    fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-    accion VARCHAR(64) NOT NULL
+    fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP()
 ) ENGINE=INNODB;
 -- Creación de triggers
 DELIMITER //
@@ -58,23 +58,31 @@ CREATE TRIGGER log_insert_actividad
     AFTER INSERT ON actividades
     FOR EACH ROW
 BEGIN
-    INSERT INTO log_actividades VALUES (NEW.id_actividad,CURRENT_TIMESTAMP(),'Actividad Creada');
-END; //
-DELIMITER ;
-DELIMITER //
+    INSERT INTO log_actividades () VALUES (NEW.id_actividad,CURRENT_TIMESTAMP());
+END //
 CREATE TRIGGER log_insert_usuario
     AFTER INSERT ON usuarios
     FOR EACH ROW
 BEGIN
-    INSERT INTO log_usuarios VALUES (NEW.nombre_usuario,CURRENT_TIMESTAMP(),'Usuario Creado');
-END; //
+    INSERT INTO log_usuarios VALUES (NEW.nombre_usuario,CURRENT_TIMESTAMP());
+END //
 DELIMITER ;
 -- Creación de usario limitado
-DROP USER IF EXISTS 'usario_limitado'@'when2raid-devtest.cl0s6yiusrsj.us-east-1.rds.amazonaws.com' IDENTIFIED BY 'creador_usuario';
-CREATE USER 'usario_limitado'@'when2raid-devtest.cl0s6yiusrsj.us-east-1.rds.amazonaws.com' IDENTIFIED BY 'creador_usuario';
-GRANT INSERT ON when2raid.log_insert_usuario TO 'usario_limitado'@'when2raid-devtest.cl0s6yiusrsj.us-east-1.rds.amazonaws.com';
-GRANT SELECT ON when2raid.usuarios TO 'usario_limitado'@'when2raid-devtest.cl0s6yiusrsj.us-east-1.rds.amazonaws.com';
-GRANT CREATE USER ON *.* TO 'usario_limitado'@'when2raid-devtest.cl0s6yiusrsj.us-east-1.rds.amazonaws.com';
+DROP USER IF EXISTS 'usario_limitado'@'%';
+CREATE USER 'usario_limitado'@'%' IDENTIFIED BY '';
+-- Roles del usuario creador/comprobador de usuarios
+REVOKE ALL PRIVILEGES ON *.* FROM 'usario_limitado'@'%'; 
+GRANT SELECT, INSERT, UPDATE, DELETE ON when2raid.usuarios TO 'usario_limitado'@'%';
+GRANT INSERT ON when2raid.log_usuarios TO 'usario_limitado'@'%';
+GRANT CREATE USER ON *.* TO 'usario_limitado'@'%';
+-- Creación del usuario final
+DROP USER IF EXISTS 'usuario_final'@'%';
+CREATE USER 'usuario_final'@'%' IDENTIFIED BY '';
+REVOKE ALL PRIVILEGES ON *.* FROM 'usuario_final'@'%'; 
+GRANT SELECT, UPDATE ON when2raid.usuarios TO 'usuario_final'@'%';
+GRANT SELECT, UPDATE, INSERT, DELETE ON when2raid.actividades TO 'usuario_final'@'%';
+GRANT SELECT, UPDATE, INSERT, DELETE ON when2raid.tipos TO 'usuario_final'@'%';
+GRANT SELECT, UPDATE, INSERT, DELETE ON when2raid.horas_disponibles TO 'usuario_final'@'%';
 
-DROP USER IF EXISTS 'usuario_final'@'when2raid-devtest.cl0s6yiusrsj.us-east-1.rds.amazonaws.com';
-CREATE USER 'usuario_final'@'when2raid-devtest.cl0s6yiusrsj.us-east-1.rds.amazonaws.com' IDENTIFIED BY 'userFinal';
+FLUSH PRIVILEGES;
+
