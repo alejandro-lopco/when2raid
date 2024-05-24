@@ -6,7 +6,7 @@ CREATE DATABASE when2raid;
 USE when2raid;
 CREATE TABLE usuarios (
     nombre_usuario VARCHAR(16) PRIMARY KEY,
-    passwd_usuario VARCHAR(16) NOT NULL,
+    passwd_usuario VARCHAR(64) NOT NULL,
     nombre_completo VARCHAR(32)
 ) ENGINE=INNODB;
 CREATE TABLE tipos (
@@ -58,13 +58,13 @@ CREATE TRIGGER log_insert_actividad
     AFTER INSERT ON actividades
     FOR EACH ROW
 BEGIN
-    INSERT INTO log_actividades () VALUES (NEW.id_actividad,CURRENT_TIMESTAMP());
+    INSERT INTO log_actividades (id_actividad,fecha) VALUES (NEW.id_actividad,CURRENT_TIMESTAMP());
 END //
 CREATE TRIGGER log_insert_usuario
     AFTER INSERT ON usuarios
     FOR EACH ROW
 BEGIN
-    INSERT INTO log_usuarios VALUES (NEW.nombre_usuario,CURRENT_TIMESTAMP());
+    INSERT INTO log_usuarios (nombre_usuario,fecha) VALUES (NEW.nombre_usuario,CURRENT_TIMESTAMP());
 END //
 DELIMITER ;
 -- Creación de usario limitado

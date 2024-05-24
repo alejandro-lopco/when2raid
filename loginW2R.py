@@ -8,13 +8,13 @@ def setupMainGUI():
         [sg.Text("Nombre de usuario:")],
         [sg.Input(key='-USER-')],
         [sg.Text("Contraseña")],
-        [sg.Input(key='-PASS-')],
+        [sg.Input(key='-PASS-',password_char='*')],
         [sg.Button('Iniciar Sesión'),sg.Button('Crear Usuario'),sg.Button('Configuración BBDD')],
         [sg.Text('',key='-CONF-')] # Muestra de mensajes 
     ]
 
     # Creamos la ventana
-    window = sg.Window('Iniciar Sesión',layout)
+    window = sg.Window('Iniciar Sesión',layout,return_keyboard_events=True)
 
     return window
 
@@ -24,14 +24,14 @@ def setupUserGUI():
         [sg.Text("Nombre de usuario:")],
         [sg.Input(key='-USER-')],
         [sg.Text("Contraseña")],
-        [sg.Input(key='-PASS-')],
+        [sg.Input(key='-PASS-',password_char='*')],
         [sg.Text("Nombre Completo")],
         [sg.Input(key='-FULLNAME-')],
         [sg.Button('Crear Usuario')],
         [sg.Text('',key='-CONF-')] # Muestra de mensajes 
     ]
 
-    windowUser = sg.Window('Iniciar Sesión',layoutUser)
+    windowUser = sg.Window('Iniciar Sesión',layoutUser,return_keyboard_events=True)
 
     return windowUser
 
@@ -41,14 +41,17 @@ def main():
     while True:
         event, values = window.read()
 
-        if event == 'Iniciar Sesión':
-            global confDB
+        if event == 'Iniciar Sesión' and values['-PASS-'] != '':            
+            global cnxDB
 
-            if db.checkLogin(values['-USER-'],values['-PASS-']):
-                confDB = db.loginDB(values['-USER-'],values['-PASS-'])
+            userHash = db.passwdHash(values['-PASS-'])
 
-                window['-CONF-'].update('Ha iniciado sesión correctamente')
-                window['-CONF-'].update(text_color='Light Green')
+            if db.checkLogin(values['-USER-'],userHash):
+                cnxDB = db.loginDB()
+
+                if cnxDB is not None:
+                    window['-CONF-'].update(f'Ha iniciado sesión correctamente con:{values['-USER-']}')
+                    window['-CONF-'].update(text_color='Light Green')
 
             else:
                 window['-CONF-'].update('Nombre de usuario o contraseña incorrecto')
@@ -63,9 +66,11 @@ def main():
             while True:
                 eventUser, valuesUser = windowUser.read()
 
-                if eventUser == 'Crear Usuario':
+                if eventUser == 'Crear Usuario' and valuesUser['-PASS-'] != '':
                     if db.checkUser(valuesUser['-USER-']) is False:
-                        if db.addUsr(valuesUser['-USER-'],valuesUser['-PASS-'],valuesUser['-FULLNAME-']):
+                        userHash = db.passwdHash(valuesUser['-PASS-'])
+
+                        if db.addUsr(valuesUser['-USER-'],userHash,valuesUser['-FULLNAME-']):
                             windowUser['-CONF-'].update('Usuario creado correctamente')
                             windowUser['-CONF-'].update(text_color='Light Green')
                         else:
@@ -74,6 +79,7 @@ def main():
                     else:
                         windowUser['-CONF-'].update('Usuario ya existente')
                         windowUser['-CONF-'].update(text_color='Black')
+                    
                 if eventUser == sg.WIN_CLOSED:
                     break
 

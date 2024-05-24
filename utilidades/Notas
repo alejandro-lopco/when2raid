@@ -1,0 +1,11 @@
+#POR HACER TODAVÍA
+    -   Transferir los datos del login a la página principal de la página
+#HACIENDO AHORA
+    -   Usar una libreria para proteger las contraseñas en condiciones con claves hash
+#HECHO
+    -   Actualizar los roles de la BBDD local
+    -   Parseo de Config (Escalable con más opciones)
+    -   Parsear las opciones para cogerlas directamente del archivo .ini
+    -   El proceso de login
+    -   Crear Usuarios
+#PENSANDO HACER

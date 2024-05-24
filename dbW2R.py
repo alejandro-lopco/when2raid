@@ -1,6 +1,7 @@
 import configW2R as ini
 import mysql.connector 
 from mysql.connector import Error
+import hashlib
 
 conf = ini.getCnf()
 
@@ -96,7 +97,6 @@ def addUsr(username, passwd, fullName):
         )
         if cnx is not None:
             cursor = cnx.cursor()
-            print(f"Username: {username}, Password: {passwd}, Full Name: {fullName}")
             query = "INSERT INTO usuarios VALUES (%s,%s,%s);"
 
             cursor.execute(query,(username,passwd,fullName))
@@ -113,3 +113,16 @@ def addUsr(username, passwd, fullName):
         if cnx is not None:
             cursor.close()
             cnx.close()
+
+def passwdHash(passwd):
+    try:
+        password_utf = passwd.encode('utf-8')
+
+        sha256hash = hashlib.sha256()
+        sha256hash.update(password_utf)
+
+        passwd_hash = sha256hash.hexdigest()
+
+        return passwd_hash
+    except:
+        pass
