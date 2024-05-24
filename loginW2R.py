@@ -9,7 +9,6 @@ def setupMainGUI():
         [sg.Input(key='-USER-')],
         [sg.Text("Contraseña")],
         [sg.Input(key='-PASS-',password_char='*')],
-        [sg.Input(key='-PASS-',password_char='*')],
         [sg.Button('Iniciar Sesión'),sg.Button('Crear Usuario'),sg.Button('Configuración BBDD')],
         [sg.Text('',key='-CONF-')] # Muestra de mensajes 
     ]
@@ -54,9 +53,7 @@ def main():
                 if cnxDB is not None:
                     window['-CONF-'].update(f'Ha iniciado sesión correctamente con:{values['-USER-']}')
                     window['-CONF-'].update(text_color='Light Green')
-                if cnxDB is not None:
-                    window['-CONF-'].update(f'Ha iniciado sesión correctamente con:{values['-USER-']}')
-                    window['-CONF-'].update(text_color='Light Green')
+                    cnf.defaultUser(values['-USER-'])
 
             else:
                 window['-CONF-'].update('Nombre de usuario o contraseña incorrecto')

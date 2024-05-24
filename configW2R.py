@@ -9,6 +9,10 @@ def writeConfig(hostname,puerto):
         'port': puerto
     }
 
+    config['USER'] = {
+        'default': ''
+    }
+
     with open('configW2R.ini','w') as file:
         config.write(file)
 
@@ -18,6 +22,18 @@ def getCnf():
 
     return config
 
+def defaultUser(username):
+    config = ini.ConfigParser()
+
+    config.read('configW2R.ini')
+
+    if 'USER' not in config.sections():
+        config.add_section('USER')
+    
+    config.set('USER','default',username)
+
+    with open('configW2R.ini','w') as file:
+        config.write(file)
 
 def setupGUI():
     config = getCnf()

@@ -1,8 +1,10 @@
 #POR HACER TODAVÍA
-    -   Transferir los datos del login a la página principal de la página
+    -   Planear la maquetación de la página principal
+    -   Hacer un handler para UnboundLocalError, en el caso de que la base de datos no esté operativa
 #HACIENDO AHORA
-    -   Usar una libreria para proteger las contraseñas en condiciones con claves hash
 #HECHO
+    -   Transferir los datos del login a la página principal de la página
+    -   Usar una libreria para proteger las contraseñas en condiciones con claves hash
     -   Actualizar los roles de la BBDD local
     -   Parseo de Config (Escalable con más opciones)
     -   Parsear las opciones para cogerlas directamente del archivo .ini
