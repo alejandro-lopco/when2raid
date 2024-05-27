@@ -1,8 +1,11 @@
 #POR HACER TODAVÍA
     -   Implementar en la GUI los handlers
 #HACIENDO AHORA
-    -   Planear la maquetación de la página principal
+    -   Opciones específicas de cada tab
+
 #HECHO
+    -   Implementar los temas disponibles en la libreria dentro de la configuración    
+    -   Planear la maquetación de la página principal
     -   Hacer un handler para UnboundLocalError, en el caso de que la base de datos no esté operativa
     -   Transferir los datos del login a la página principal de la página
     -   Usar una libreria para proteger las contraseñas en condiciones con claves hash

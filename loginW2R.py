@@ -3,6 +3,7 @@ import dbW2R as db
 import configW2R as cnf
 
 def setupMainGUI():
+    sg.theme(cnf.getTheme())
     # Esquema de la ventana
     layout = [
         [sg.Text("Nombre de usuario:")],
@@ -19,6 +20,7 @@ def setupMainGUI():
     return window
 
 def setupUserGUI():
+    sg.theme(cnf.getTheme())
     # Ventana de creación de usuario
     layoutUser = [
         [sg.Text("Nombre de usuario:")],
@@ -41,7 +43,7 @@ def main():
     while True:
         event, values = window.read()
 
-        if event == 'Iniciar Sesión' and values['-PASS-'] != '':            
+        if event == 'Iniciar Sesión' and values['-PASS-'] != '':
             global cnxDB
 
             userHash = db.passwdHash(values['-PASS-'])
@@ -51,12 +53,10 @@ def main():
 
                 if cnxDB is not None:
                     window['-CONF-'].update(f'Ha iniciado sesión correctamente con:{values['-USER-']}')
-                    window['-CONF-'].update(text_color='Light Green')
                     cnf.defaultUser(values['-USER-'])
 
             else:
                 window['-CONF-'].update('Nombre de usuario o contraseña incorrecto')
-                window['-CONF-'].update(text_color='Black')
 
         if event == 'Configuración BBDD':
             cnf.main()
@@ -73,13 +73,10 @@ def main():
 
                         if db.addUsr(valuesUser['-USER-'],userHash,valuesUser['-FULLNAME-']):
                             windowUser['-CONF-'].update('Usuario creado correctamente')
-                            windowUser['-CONF-'].update(text_color='Light Green')
                         else:
                             windowUser['-CONF-'].update('Error en la creación del usuario')
-                            windowUser['-CONF-'].update(text_color='Black')
                     else:
                         windowUser['-CONF-'].update('Usuario ya existente')
-                        windowUser['-CONF-'].update(text_color='Black')
                     
                 if eventUser == sg.WIN_CLOSED:
                     break
