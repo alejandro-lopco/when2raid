@@ -25,7 +25,6 @@ def setupUserGUI():
         [sg.Input(key='-USER-')],
         [sg.Text("Contraseña")],
         [sg.Input(key='-PASS-',password_char='*')],
-        [sg.Input(key='-PASS-',password_char='*')],
         [sg.Text("Nombre Completo")],
         [sg.Input(key='-FULLNAME-')],
         [sg.Button('Crear Usuario')],

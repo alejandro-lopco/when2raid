@@ -1,8 +1,9 @@
 #POR HACER TODAVÍA
-    -   Planear la maquetación de la página principal
-    -   Hacer un handler para UnboundLocalError, en el caso de que la base de datos no esté operativa
+    -   Implementar en la GUI los handlers
 #HACIENDO AHORA
+    -   Planear la maquetación de la página principal
 #HECHO
+    -   Hacer un handler para UnboundLocalError, en el caso de que la base de datos no esté operativa
     -   Transferir los datos del login a la página principal de la página
     -   Usar una libreria para proteger las contraseñas en condiciones con claves hash
     -   Actualizar los roles de la BBDD local
@@ -11,3 +12,5 @@
     -   El proceso de login
     -   Crear Usuarios
 #PENSANDO HACER
+    -   Cambiar el cambio nuevas ventanas cambiando el layout y no abrir una ventana aparte
+    -   Organizar los módulos de dbW2R.py y configW2R.py con objetos

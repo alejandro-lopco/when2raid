@@ -1,15 +1,17 @@
 import configW2R as ini
-import mysql.connector 
+import mysql.connector as sql
 from mysql.connector import Error
 import hashlib
 
-conf = ini.getCnf()
+CONF = ini.getCnf()
+
 
 def loginDB():
     try:
+        global cnx
         # Nos conectamos a la base de datos
-        cnx = mysql.connector.connect(
-            host    =conf['DATABASE']['hostname'],
+        cnx = sql.connect(
+            host    =CONF['DATABASE']['hostname'],
             database='when2raid',
             user    ='usuario_final',
             password=''
@@ -18,17 +20,26 @@ def loginDB():
             return cnx
         else:
             return None
-    
+        
     except Error as ErrorConexion:
         print(ErrorConexion)
         return None
+    
+    finally:        
+        try:
+            if cnx is not None:
+                cnx.close()
+        except UnboundLocalError:
+            print("Fallo en conexión a la BBDD.")
+            return None
+
     
 def checkUser(username):
     try:
         global cnx
         # Nos conectamos a la base de datos
-        cnx = mysql.connector.connect(
-            host    =conf['DATABASE']['hostname'],
+        cnx = sql.connect(
+            host    =CONF['DATABASE']['hostname'],
             database='when2raid',
             user    ='usario_limitado',
             password=''
@@ -50,16 +61,21 @@ def checkUser(username):
         print(ErrorConexion)
         return None
     
-    finally:
-        if cnx is not None:
-            cursor.close()
-            cnx.close() 
+    finally:        
+        try:
+            if cnx is not None:
+                cnx.close()
+        except UnboundLocalError:
+            print("Fallo en conexión a la BBDD.")
+            return None
+
 
 def checkLogin(username, passwd):
     try:
+        global cnx
         # Nos conectamos a la base de datos
-        cnx = mysql.connector.connect(
-            host    =conf['DATABASE']['hostname'],
+        cnx = sql.connect(
+            host    =CONF['DATABASE']['hostname'],
             database='when2raid',
             user    ='usario_limitado',
             password=''
@@ -79,18 +95,23 @@ def checkLogin(username, passwd):
 
     except Error as ErrorConexion:
         print(ErrorConexion)
-        return False
+        return None
     
-    finally:
-        if cnx is not None:
-            cursor.close()
-            cnx.close()
+    finally:        
+        try:
+            if cnx is not None:
+                cnx.close()
+        except UnboundLocalError:
+            print("Fallo en conexión a la BBDD.")
+        except NameError:
+            print("Fallo en conexión a la BBDD.")            
 
 def addUsr(username, passwd, fullName):
     try:
+        global cnx
         # Nos conectamos a la base de datos
-        cnx = mysql.connector.connect(
-            host    =conf['DATABASE']['hostname'],
+        cnx = sql.connect(
+            host    =CONF['DATABASE']['hostname'],
             database='when2raid',
             user    ='usario_limitado',
             password=''
@@ -109,10 +130,14 @@ def addUsr(username, passwd, fullName):
         print(ErrorConexion)
         return False
 
-    finally:
-        if cnx is not None:
-            cursor.close()
-            cnx.close()
+    finally:        
+        try:
+            if cnx is not None:
+                cnx.close()
+        except UnboundLocalError:
+            print("Fallo en conexión a la BBDD.")
+            return None
+
 
 def passwdHash(passwd):
     try:
