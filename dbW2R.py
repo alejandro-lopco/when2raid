@@ -4,16 +4,15 @@ from mysql.connector import Error
 import hashlib
 
 CONF = ini.getCnf()
-
+global cnx
 
 def loginDB():
     try:
-        global cnx
         # Nos conectamos a la base de datos
         cnx = sql.connect(
             host    =CONF['DATABASE']['hostname'],
-            database='when2raid',
-            user    ='usuario_final',
+            database=CONF['DATABASE']['db_name'],
+            user    =CONF['DATABASE']['db_user'],
             password=''
         )
         if cnx is not None:
@@ -32,16 +31,14 @@ def loginDB():
         except UnboundLocalError:
             print("Fallo en conexión a la BBDD.")
             return None
-
     
 def checkUser(username):
     try:
-        global cnx
         # Nos conectamos a la base de datos
         cnx = sql.connect(
             host    =CONF['DATABASE']['hostname'],
-            database='when2raid',
-            user    ='usario_limitado',
+            database=CONF['DATABASE']['db_name'],
+            user    =CONF['DATABASE']['db_limited'],
             password=''
         )
         if cnx is not None:
@@ -69,15 +66,13 @@ def checkUser(username):
             print("Fallo en conexión a la BBDD.")
             return None
 
-
 def checkLogin(username, passwd):
     try:
-        global cnx
         # Nos conectamos a la base de datos
         cnx = sql.connect(
             host    =CONF['DATABASE']['hostname'],
-            database='when2raid',
-            user    ='usario_limitado',
+            database=CONF['DATABASE']['db_name'],
+            user    =CONF['DATABASE']['db_limited'],
             password=''
         )
         if cnx is not None:
@@ -108,12 +103,11 @@ def checkLogin(username, passwd):
 
 def addUsr(username, passwd, fullName):
     try:
-        global cnx
         # Nos conectamos a la base de datos
         cnx = sql.connect(
             host    =CONF['DATABASE']['hostname'],
-            database='when2raid',
-            user    ='usario_limitado',
+            database=CONF['DATABASE']['db_name'],
+            user    =CONF['DATABASE']['db_limited'],
             password=''
         )
         if cnx is not None:
@@ -138,7 +132,6 @@ def addUsr(username, passwd, fullName):
             print("Fallo en conexión a la BBDD.")
             return None
 
-
 def passwdHash(passwd):
     try:
         password_utf = passwd.encode('utf-8')
@@ -150,4 +143,68 @@ def passwdHash(passwd):
 
         return passwd_hash
     except:
-        pass
+        print('Error al generar el hash de la contraseña')
+
+def addActividad(
+    nombre_actividad,
+    descripcion_actividad,
+    tipo_actividad,
+    privacidad,
+    passwd_actividad,
+    horas_disponibles
+):
+    try:
+        # Nos conectamos a la base de datos
+        cnx = sql.connect(
+            host    =CONF['DATABASE']['hostname'],
+            database=CONF['DATABASE']['db_name'],
+            user    =CONF['DATABASE']['db_user'],
+            password=''
+        )
+
+        cursor  = cnx.cursor()
+        qryAct  = "INSERT INTO actividades (nombre_actividad,descripcion_actividad,tipo_actividad,privacidad,passwd_actividad) VALUES (%s,%s,%s,%s,%s)"
+
+        cursor.execute(qryAct,(
+            nombre_actividad,
+            descripcion_actividad,
+            tipo_actividad,
+            privacidad,
+            passwd_actividad,
+            horas_disponibles
+            ))
+        cnx.commit()
+
+        return True
+    except Error as ErrorConexion:
+        print(f'Error al generar la actividad: {ErrorConexion}')
+
+        return False
+    
+def getTypes():
+    try:
+        # Nos conectamos a la base de datos
+        cnx = sql.connect(
+            host    =CONF['DATABASE']['hostname'],
+            database=CONF['DATABASE']['db_name'],
+            user    =CONF['DATABASE']['db_user'],
+            password=''
+        )
+
+        cursor  = cnx.cursor()
+        qryAct  = "SELECT nombre_tipo FROM tipos;"
+
+        cursor.execute(qryAct)
+
+        rslt = cursor.fetchall()
+
+        types = []
+        for x in rslt:
+            types += x 
+
+        return types
+    except Error as ErrorConexion:
+        print(f'Error al buscar el tipo: {ErrorConexion}')
+
+
+        

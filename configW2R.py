@@ -6,7 +6,10 @@ def writeConfig(hostname,puerto,tema):
 
     config['DATABASE'] = {
         'hostname': f'{hostname}',
-        'port': f'{puerto}'
+        'port': f'{puerto}',
+        'db_name': f'when2raid',
+        'db_user':f'usuario_final',
+        'db_limited':f'usuario_limitado'
     }
 
     config['USER'] = {
@@ -82,8 +85,7 @@ def main():
 
             sg.popup('El programa se reinicará con la configuración especificada')
             window.close()
-
-            window = setupGUI()
+            break
 
         if event == sg.WIN_CLOSED or event == 'Cancelar':
             break

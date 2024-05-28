@@ -11,9 +11,7 @@ CREATE TABLE usuarios (
 ) ENGINE=INNODB;
 CREATE TABLE tipos (
     id_tipo INT AUTO_INCREMENT PRIMARY KEY,
-    nombre_tipo VARCHAR(64) NOT NULL,
-    descripcion_tipo VARCHAR (128),
-    max_tipo INT
+    nombre_tipo VARCHAR(64) NOT NULL
 ) ENGINE=INNODB;
 CREATE TABLE actividades (
     id_actividad INT AUTO_INCREMENT PRIMARY KEY,
@@ -22,9 +20,6 @@ CREATE TABLE actividades (
     tipo_actividad INT,
     privacidad BOOLEAN NOT NULL,
     passwd_actividad VARCHAR(16),
-    apuntados_actividad INT NOT NULL,
-    usuarios_actividad JSON NOT NULL,
-    limite_actividad INT,
     FOREIGN KEY (tipo_actividad) REFERENCES tipos(id_tipo)
 ) ENGINE=INNODB;
 CREATE TABLE horas_disponibles (
@@ -68,21 +63,20 @@ BEGIN
 END //
 DELIMITER ;
 -- Creación de usario limitado
-DROP USER IF EXISTS 'usario_limitado'@'%';
-CREATE USER 'usario_limitado'@'%' IDENTIFIED BY '';
+DROP USER IF EXISTS 'usuario_limitado'@'%';
+CREATE USER 'usuario_limitado'@'%' IDENTIFIED BY '';
 -- Roles del usuario creador/comprobador de usuarios
-REVOKE ALL PRIVILEGES ON *.* FROM 'usario_limitado'@'%'; 
-GRANT SELECT, INSERT, UPDATE, DELETE ON when2raid.usuarios TO 'usario_limitado'@'%';
-GRANT INSERT ON when2raid.log_usuarios TO 'usario_limitado'@'%';
-GRANT CREATE USER ON *.* TO 'usario_limitado'@'%';
+REVOKE ALL PRIVILEGES ON *.* FROM 'usuario_limitado'@'%'; 
+GRANT SELECT, INSERT, UPDATE, DELETE ON when2raid.usuarios TO 'usuario_limitado'@'%';
+GRANT INSERT ON when2raid.log_usuarios TO 'usuario_limitado'@'%';
+GRANT CREATE USER ON *.* TO 'usuario_limitado'@'%';
 -- Creación del usuario final
 DROP USER IF EXISTS 'usuario_final'@'%';
 CREATE USER 'usuario_final'@'%' IDENTIFIED BY '';
 REVOKE ALL PRIVILEGES ON *.* FROM 'usuario_final'@'%'; 
 GRANT SELECT, UPDATE ON when2raid.usuarios TO 'usuario_final'@'%';
 GRANT SELECT, UPDATE, INSERT, DELETE ON when2raid.actividades TO 'usuario_final'@'%';
-GRANT SELECT, UPDATE, INSERT, DELETE ON when2raid.tipos TO 'usuario_final'@'%';
+GRANT SELECT ON when2raid.tipos TO 'usuario_final'@'%';
 GRANT SELECT, UPDATE, INSERT, DELETE ON when2raid.horas_disponibles TO 'usuario_final'@'%';
 
 FLUSH PRIVILEGES;
-

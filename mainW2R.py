@@ -1,14 +1,17 @@
 import PySimpleGUI as sg
-import mysql.connector 
+import mysql.connector
+import dbW2R as db
 import configW2R as cnf
 from mysql.connector import Error
 
 def setupMainGUI():
+    config = cnf.getCnf()
+
     sg.theme(cnf.getTheme())
 
     header = ['ID','Titulo']
     test = []
-    for x in range (0,50):
+    for x in range (0,50): # Valores de testeo
         test += [x,f'Entrada #{x}'],
     # Definición de opciones en la toolbar
     MENU_DEF = [
@@ -17,7 +20,7 @@ def setupMainGUI():
     ]
 
     HOME_DEF = [
-        [sg.Text('Bienvenido #USUARIO#')],
+        [sg.Text(f'Bienvenido {config['USER']['default']}')],
         [sg.Text('Tus actividades:'),sg.Button('Crear Actividad')],
         [sg.Table(
             values=test,
@@ -69,7 +72,6 @@ def setupMainGUI():
     ]
 
     layout = [
-        [sg.Titlebar('When2Raid')],
         [sg.MenubarCustom(MENU_DEF, key='-MENUBAR-')],
         [sg.Text('When2Raid', 
                  size=(32,1), 
@@ -101,6 +103,46 @@ def setupMainGUI():
 
     return window
 
+def setupActGUI():
+    config = cnf.getCnf()
+
+    types = db.getTypes()
+
+    sg.theme(cnf.getTheme())
+
+    ACT_DEF = [
+        [sg.Text(f'Crea una nueva actividad',
+                 justification='center',
+                 size=(32,1),
+                 relief=sg.RELIEF_RIDGE,
+                 font=('Calibri italic',24))],
+        [sg.Text('Nombre de la actividad',
+                 size=(16,1)),
+         sg.InputText(default_text='Actividad Nueva',
+                      expand_x=True,
+                      key='-ACTNAME-')],
+        [sg.Text('Descripción de la actividad')],
+        [sg.MLine(default_text='Descripción...',
+                  size=(35, 3),
+                  expand_x=True,
+                  key='-ACTDESC-')],
+        [sg.Text('Descripción de la actividad')],
+        [sg.Combo((types),
+                  size=(30,5),
+                  readonly=True,
+                  expand_x=True,
+                  key='-ACTTYPE-')]
+    ]
+
+    windowAct = sg.Window(
+        'Crear Actividad', 
+        layout=ACT_DEF,
+        size=(512,612)
+    )
+
+    return windowAct
+
+
 def main():
     window = setupMainGUI()
 
@@ -110,5 +152,13 @@ def main():
         if event == sg.WIN_CLOSED or event == 'Cancelar':
             break        
 
+        if event == 'Crear Actividad':
+            windowAct = setupActGUI()
+
+            while True:
+                eventAct,valuesAct = windowAct.read()
+                if eventAct == sg.WIN_CLOSED or eventAct == 'Cancelar':
+                    break        
+            
 if __name__ == '__main__':
     main()
