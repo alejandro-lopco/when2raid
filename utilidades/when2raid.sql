@@ -18,22 +18,17 @@ CREATE TABLE actividades (
     nombre_actividad VARCHAR(64) NOT NULL,
     descripcion_actividad VARCHAR (128),
     tipo_actividad INT,
-    privacidad BOOLEAN NOT NULL,
-    passwd_actividad VARCHAR(16),
+    passwd_actividad VARCHAR(64),
+    fecha DATE NOT NULL,
     FOREIGN KEY (tipo_actividad) REFERENCES tipos(id_tipo)
 ) ENGINE=INNODB;
 CREATE TABLE horas_disponibles (
     id_actividad INT PRIMARY KEY,
-    usuario_actividad VARCHAR(16),
-    dia1 CHAR(26) NOT NULL,
-    dia2 CHAR(26) NOT NULL,
-    dia3 CHAR(26) NOT NULL,
-    dia4 CHAR(26) NOT NULL,
-    dia5 CHAR(26) NOT NULL,
-    dia6 CHAR(26) NOT NULL,
-    dia7 CHAR(26) NOT NULL,
+    id_usuario VARCHAR(16),
+    hora_inicio TIME NOT NULL,
+    hora_final TIME NOT NULL,
     FOREIGN KEY (id_actividad) REFERENCES actividades(id_actividad),
-    FOREIGN KEY (usuario_actividad) REFERENCES usuarios(nombre_usuario)
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(nombre_usuario)
 ) ENGINE=INNODB;
 CREATE TABLE log_actividades (
     id_log INT AUTO_INCREMENT PRIMARY KEY,

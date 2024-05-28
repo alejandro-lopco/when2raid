@@ -149,9 +149,8 @@ def addActividad(
     nombre_actividad,
     descripcion_actividad,
     tipo_actividad,
-    privacidad,
     passwd_actividad,
-    horas_disponibles
+    fecha
 ):
     try:
         # Nos conectamos a la base de datos
@@ -163,16 +162,14 @@ def addActividad(
         )
 
         cursor  = cnx.cursor()
-        qryAct  = "INSERT INTO actividades (nombre_actividad,descripcion_actividad,tipo_actividad,privacidad,passwd_actividad) VALUES (%s,%s,%s,%s,%s)"
+        qryAct  = "INSERT INTO actividades (nombre_actividad,descripcion_actividad,tipo_actividad,passwd_actividad,fecha) VALUES (%s,%s,%s,%s,%s)"
 
         cursor.execute(qryAct,(
             nombre_actividad,
             descripcion_actividad,
             tipo_actividad,
-            privacidad,
             passwd_actividad,
-            horas_disponibles
-            ))
+            fecha))
         cnx.commit()
 
         return True
@@ -180,6 +177,9 @@ def addActividad(
         print(f'Error al generar la actividad: {ErrorConexion}')
 
         return False
+    
+def addHorasDisponibles():
+    pass
     
 def getTypes():
     try:
@@ -206,5 +206,31 @@ def getTypes():
     except Error as ErrorConexion:
         print(f'Error al buscar el tipo: {ErrorConexion}')
 
+def getTypeID(typeName):
+    try:
+        # Nos conectamos a la base de datos
+        cnx = sql.connect(
+            host    =CONF['DATABASE']['hostname'],
+            database=CONF['DATABASE']['db_name'],
+            user    =CONF['DATABASE']['db_user'],
+            password=''
+        )
 
-        
+        cursor  = cnx.cursor()
+        qryAct  = "SELECT id_tipo FROM tipos WHERE nombre_tipo = %s;"
+
+        cursor.execute(qryAct,(typeName,))
+
+        rslt = cursor.fetchone()
+        return rslt
+    
+    except Error as ErrorConexion:
+        print(f'Error al buscar el tipo: {ErrorConexion}')    
+
+def dateSQLFormat(fecha):
+    ANYO    = fecha[2]
+    MES     = fecha[0]
+    DIA     = fecha[1]
+
+    fechaSQL = f"{ANYO:04d}-{MES:02d}-{DIA:02d}"
+    return fechaSQL

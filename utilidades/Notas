@@ -2,8 +2,10 @@
     -   Implementar en la GUI los handlers
 #HACIENDO AHORA
     -   Opciones específicas de cada tab
-
+    -   Insertar los datos de la GUI de creación a la tabla de horas disponibles
 #HECHO
+    -   Proceso de adcición de actividades a la base de datos
+    -   Esquematicación de GUI de creación de actividades
     -   Implementar los temas disponibles en la libreria dentro de la configuración    
     -   Planear la maquetación de la página principal
     -   Hacer un handler para UnboundLocalError, en el caso de que la base de datos no esté operativa
