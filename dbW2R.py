@@ -264,10 +264,39 @@ def getTypeID(typeName):
         cursor.execute(qryAct,(typeName,))
 
         rslt = cursor.fetchone()
+
+        cnx.commit()
+
         return rslt[0]
     
     except Error as ErrorConexion:
         print(f'Error al buscar el tipo: {ErrorConexion}')    
+        cnx.rollback()
+
+def getTypeName(id):
+    try:
+        # Nos conectamos a la base de datos
+        cnx = sql.connect(
+            host    =CONF['DATABASE']['hostname'],
+            database=CONF['DATABASE']['db_name'],
+            user    =CONF['DATABASE']['db_user'],
+            password=''
+        )
+
+        cursor  = cnx.cursor()
+        qryAct  = "SELECT nombre_tipo FROM tipos WHERE id_tipo = %s;"
+
+        cursor.execute(qryAct,(id,))
+
+        rslt = cursor.fetchone()
+
+        cnx.commit()
+
+        return rslt[0]
+    
+    except Error as ErrorConexion:
+        print(f'Error al buscar el nombre: {ErrorConexion}')    
+        cnx.rollback()
 
 def dateSQLFormat(fecha):
     ANYO    = fecha[2]
@@ -281,3 +310,74 @@ def timeSQLFormat(hora, min):
     horaMysql = str(f'{hora:02d}:{min:02d}:00')
 
     return horaMysql
+
+def getApuntadas(user):
+    try:
+        cnx = sql.connect(
+            host    =CONF['DATABASE']['hostname'],
+            database=CONF['DATABASE']['db_name'],
+            user    =CONF['DATABASE']['db_user'],
+            password=''
+        )
+        cursor = cnx.cursor()
+
+        qry = 'SELECT * FROM horas_disponibles WHERE id_usuario = %s;'
+        cursor.execute(qry,(user,))
+
+        rslt = cursor.fetchall()
+
+        cnx.commit()
+
+        return rslt
+    except Error as ErrorConexion:
+        print(f'Ha ocurrido un error al buscar las actividades: {ErrorConexion}')
+        cnx.rollback()
+        return None
+
+def getActInfo(id):
+    try:
+        cnx = sql.connect(
+            host    =CONF['DATABASE']['hostname'],
+            database=CONF['DATABASE']['db_name'],
+            user    =CONF['DATABASE']['db_user'],
+            password=''
+        )
+        cursor = cnx.cursor()
+
+        qry = 'SELECT * FROM actividades WHERE id_actividad = %s'
+        cursor.execute(qry,(id,))
+
+        rslt = cursor.fetchall()
+
+        cnx.commit()
+
+        return rslt
+    except Error as ErrorConexion:
+        print(f'Ha ocurrido un error al buscar las actividades: {ErrorConexion}')
+        cnx.rollback()
+        return None
+    
+def autorAct(actId):
+    try:
+        cnx = sql.connect(
+            host    =CONF['DATABASE']['hostname'],
+            database=CONF['DATABASE']['db_name'],
+            user    =CONF['DATABASE']['db_user'],
+            password=''
+        )
+        cursor = cnx.cursor()
+
+        qry = 'SELECT usuario FROM log_actividades WHERE id_actividad = %s'
+        cursor.execute(qry,(actId,))
+
+        rslt = cursor.fetchall()
+
+        cnx.commit()
+
+        return rslt
+    except Error as ErrorConexion:
+        print(f'Ha ocurrido un error al buscar las actividades: {ErrorConexion}')
+        cnx.rollback()
+        return None
+    
+    

@@ -1,9 +1,14 @@
 #POR HACER TODAVÍA
-    -   Implementar en la GUI los handlers
+    -   Buscador de actividades
+    -   Buscador de tipos
+    -   Opciones en mainW2R
 #HACIENDO AHORA
     -   Opciones específicas de cada tab
-    -   Insertar los datos de la GUI de creación a la tabla de horas disponibles
+    -   Edición da actividades
+    -   Archivo de plantilla para hacer pruebas en la base de datos
 #HECHO
+    -   Esquema de muestra de información en la Tab actividades
+    -   Insertar los datos de la GUI de creación a la tabla de horas disponibles
     -   Proceso de adcición de actividades a la base de datos
     -   Esquematicación de GUI de creación de actividades
     -   Implementar los temas disponibles en la libreria dentro de la configuración    
@@ -17,5 +22,7 @@
     -   El proceso de login
     -   Crear Usuarios
 #PENSANDO HACER
+    -   Asociar una imagen a cada tipo
     -   Cambiar el cambio nuevas ventanas cambiando el layout y no abrir una ventana aparte
     -   Organizar los módulos de dbW2R.py y configW2R.py con objetos
+    -   Implementar en la GUI los handlers

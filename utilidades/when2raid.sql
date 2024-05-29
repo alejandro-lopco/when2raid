@@ -72,6 +72,7 @@ REVOKE ALL PRIVILEGES ON *.* FROM 'usuario_final'@'%';
 GRANT SELECT, UPDATE ON when2raid.usuarios TO 'usuario_final'@'%';
 GRANT SELECT, UPDATE, INSERT, DELETE ON when2raid.actividades TO 'usuario_final'@'%';
 GRANT SELECT ON when2raid.tipos TO 'usuario_final'@'%';
+GRANT SELECT ON when2raid.log_actividades TO 'usuario_final'@'%';
 GRANT SELECT, UPDATE, INSERT, DELETE ON when2raid.horas_disponibles TO 'usuario_final'@'%';
 
 FLUSH PRIVILEGES;

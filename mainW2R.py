@@ -1,42 +1,72 @@
 import PySimpleGUI as sg
-import mysql.connector
+import loginW2R as lg
 import dbW2R as db
 import configW2R as cnf
-from mysql.connector import Error
-
-CONFIG = cnf.getCnf()
 
 def setupMainGUI():
+    global CONFIG
+    CONFIG = cnf.getCnf()
     sg.theme(cnf.getTheme())
 
-    header = ['ID','Titulo']
-    test = []
-    for x in range (0,50): # Valores de testeo
-        test += [x,f'Entrada #{x}'],
     # Definición de opciones en la toolbar
     MENU_DEF = [
         ['&Aplicación',['&Salir','&Cerrar Sesión']],
         ['&Actividades',['&Crear Actividad']] 
     ]
 
+    header = [
+        'ID',
+        'Nombre',
+        'Descripción',
+        'Pelea',
+        'Privada',
+        'Fecha'
+    ]
+    actApuntado         = db.getApuntadas(CONFIG['USER']['default'])
+    listaActividades    = [list(x) for x in actApuntado]
+    misActividades      = []
+    for x in listaActividades:
+        actInfo = db.getActInfo(x[0])
+        listaInfo = [list(y) for y in actInfo]
+
+        if listaInfo[0][4] is not None:
+            listaInfo[0][4] = True
+        else:
+            listaInfo[0][4] = False
+
+        listaInfo[0][3] = db.getTypeName(listaInfo[0][3])
+
+        misActividades += listaInfo
+
     HOME_DEF = [
-        [sg.Text(f'Bienvenido {CONFIG['USER']['default']}')],
-        [sg.Text('Tus actividades:'),sg.Button('Crear Actividad')],
+        [sg.Text(f'Bienvenido {CONFIG['USER']['default']}',
+                 font=('Arial bold',22),
+                 pad=(50,10),
+                 expand_x=True)],
+        [sg.Text('Tus actividades:'),
+         sg.Button('Editar Actividad',
+                   expand_x=True,
+                   border_width=(5))],
         [sg.Table(
-            values=test,
+            values=misActividades,
             headings=header,
-            num_rows=6,
             alternating_row_color='black',
             expand_x=True,
+            expand_y=True,
             key='-TABLA-',
-        )]
+        )],
+        [sg.Button('Crear Actividad',
+                   font=('Arial italic',22),
+                   border_width=(12),
+                   expand_x=True
+                   )]
     ]
 
     SEARCH_DEF = [
         [sg.Text('Buscador')],
         [sg.Text('Resultados: ')], 
         [sg.Table(
-            values=test,
+            values=misActividades,
             headings=header,
             num_rows=6,
             alternating_row_color='black',
@@ -49,7 +79,7 @@ def setupMainGUI():
         [sg.Text('Tipos disponibles')],
         [sg.Text(': ')], 
         [sg.Table(
-            values=test,
+            values=misActividades,
             headings=header,
             num_rows=6,
             alternating_row_color='black',
@@ -62,7 +92,7 @@ def setupMainGUI():
         [sg.Text('Opciones')],
         [sg.Text('Resultados: ')], 
         [sg.Table(
-            values=test,
+            values=misActividades,
             headings=header,
             num_rows=6,
             alternating_row_color='black',
@@ -75,7 +105,9 @@ def setupMainGUI():
         [sg.MenubarCustom(MENU_DEF, key='-MENUBAR-')],
         [sg.Text('When2Raid', 
                  size=(32,1), 
-                 font=('Calibri',32,'italic'),
+                 font=('Arial',28,'italic'),
+                 background_color=sg.theme_text_color(),
+                 text_color=sg.theme_background_color(),
                  justification='center', 
                  relief=sg.RELIEF_RIDGE,
                  expand_x=True,
@@ -87,8 +119,9 @@ def setupMainGUI():
             sg.Tab('Tipos disponibles',TYPE_DEF),
             sg.Tab('Opciones',OPC_DEF),
         ]],
-        key='-TABS-',
         expand_x=True,
+        expand_y=True,
+        key='-TABS-'
         )]
     ]
 
@@ -96,9 +129,9 @@ def setupMainGUI():
     window = sg.Window(
         'When2Raid',
         layout,size=(1024,512),
-        font=('Calibri'),
+        font=('Arial'),
         resizable=True,
-        finalize=True,
+        finalize=True
     )
 
     return window
@@ -205,22 +238,43 @@ def setupActGUI():
 
     return windowAct
 
+def setupEditGUI():
+    pass
+
 def main():
     window = setupMainGUI()
 
     while True:
         event, values = window.read()
+        print(event)
+        print(values)
 
-        if event == sg.WIN_CLOSED or event == 'Cancelar':
-            break        
+        if event == sg.WIN_CLOSED or event == 'Salir':
+            break
 
+        if event == 'Cerrar Sesión':
+            window.close()
+            cnf.defaultUser('')
+            lg.main()
+            break
+
+        if event == 'Editar Actividad':
+            try:
+                if db.autorAct(values['-TABLA-'][0]):
+                    print("Vas a editar")
+
+    #                while True:
+    #                    eventAct,valuesAct = windowEdit.read()
+                else:
+                    sg.popup('No eres el autor de esta actividad.')
+            except IndexError:
+                sg.popup('No ha seleccionado ninguna actividad')
         if event == 'Crear Actividad':
             windowAct = setupActGUI()
 
             fechaAct = None
             while True:
                 eventAct,valuesAct = windowAct.read()
-
 
                 if eventAct == 'Fecha de la actividad':
                     fechaAct = sg.popup_get_date()
@@ -253,11 +307,14 @@ def main():
 
                     if db.addActividad(NAME,DESC,TIPO,HASH,FECHA,HORA_INICIO,HORA_FINAL):
                         windowAct.close()
+
+                        window.close()
+                        window = setupMainGUI()
                     else:
                         windowAct['-CONFACT-'].update('Ha habido un error al crear la actividad')
 
                 if eventAct == sg.WIN_CLOSED or eventAct == 'Cancelar':
                     break
-            
+
 if __name__ == '__main__':
     main()
