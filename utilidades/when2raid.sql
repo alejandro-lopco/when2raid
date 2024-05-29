@@ -20,7 +20,9 @@ CREATE TABLE actividades (
     tipo_actividad INT,
     passwd_actividad VARCHAR(64),
     fecha DATE NOT NULL,
-    FOREIGN KEY (tipo_actividad) REFERENCES tipos(id_tipo)
+    autor VARCHAR(16) NOT NULL,
+    FOREIGN KEY (tipo_actividad) REFERENCES tipos(id_tipo),
+    FOREIGN KEY (autor) REFERENCES usuarios(nombre_usuario)
 ) ENGINE=INNODB;
 CREATE TABLE horas_disponibles (
     id_actividad INT NOT NULL,
@@ -33,7 +35,7 @@ CREATE TABLE horas_disponibles (
 CREATE TABLE log_actividades (
     id_log INT AUTO_INCREMENT PRIMARY KEY,
     id_actividad INT NOT NULL,
-    usuario VARCHAR(16) DEFAULT USER(),
+    usuario VARCHAR(16),
     fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
     FOREIGN KEY (id_actividad) REFERENCES actividades(id_actividad)
 ) ENGINE=INNODB;
@@ -48,7 +50,7 @@ CREATE TRIGGER log_insert_actividad
     AFTER INSERT ON actividades
     FOR EACH ROW
 BEGIN
-    INSERT INTO log_actividades (id_actividad,fecha) VALUES (NEW.id_actividad,CURRENT_TIMESTAMP());
+    INSERT INTO log_actividades (id_actividad,usuario,fecha) VALUES (NEW.id_actividad,NEW.autor,CURRENT_TIMESTAMP());
 END //
 CREATE TRIGGER log_insert_usuario
     AFTER INSERT ON usuarios

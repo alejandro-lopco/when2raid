@@ -2,11 +2,11 @@
     -   Buscador de actividades
     -   Buscador de tipos
     -   Opciones en mainW2R
+    -   Configurar valores máximos en las horas
 #HACIENDO AHORA
-    -   Opciones específicas de cada tab
-    -   Edición da actividades
     -   Archivo de plantilla para hacer pruebas en la base de datos
 #HECHO
+    -   Edición da actividades
     -   Esquema de muestra de información en la Tab actividades
     -   Insertar los datos de la GUI de creación a la tabla de horas disponibles
     -   Proceso de adcición de actividades a la base de datos
