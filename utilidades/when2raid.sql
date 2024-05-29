@@ -23,8 +23,8 @@ CREATE TABLE actividades (
     FOREIGN KEY (tipo_actividad) REFERENCES tipos(id_tipo)
 ) ENGINE=INNODB;
 CREATE TABLE horas_disponibles (
-    id_actividad INT PRIMARY KEY,
-    id_usuario VARCHAR(16),
+    id_actividad INT NOT NULL,
+    id_usuario VARCHAR(16) NOT NULL,
     hora_inicio TIME NOT NULL,
     hora_final TIME NOT NULL,
     FOREIGN KEY (id_actividad) REFERENCES actividades(id_actividad),

@@ -144,7 +144,7 @@ def setupActGUI():
                      expand_x=True,
                      key='-ACTPRIV-',
                      default=False)],
-        [sg.Button('Fecha de la actividad:',
+        [sg.Button('Fecha de la actividad',
                 expand_x=True),
         sg.Text('No ha indicado ninguna fecha...',
                 key='-CONFDATE-',
@@ -217,8 +217,10 @@ def main():
         if event == 'Crear Actividad':
             windowAct = setupActGUI()
 
+            fechaAct = None
             while True:
                 eventAct,valuesAct = windowAct.read()
+
 
                 if eventAct == 'Fecha de la actividad':
                     fechaAct = sg.popup_get_date()
@@ -228,6 +230,7 @@ def main():
                         windowAct['-CONFDATE-'].update(f'No ha especificado ninguna fecha...')
 
                 if eventAct == 'Crear':
+
                     NAME    = valuesAct['-ACTNAME-']
                     DESC    = valuesAct['-ACTDESC-']
                     TIPO    = db.getTypeID(valuesAct['-ACTTYPE-'])
@@ -241,9 +244,14 @@ def main():
                         HASH = None
 
                     if fechaAct is not None:
-                        FECHA   = db.dateSQLFormat(valuesAct['-DATEACT-'])
+                        FECHA   = db.dateSQLFormat(fechaAct)
 
-                    if db.addActividad(NAME,DESC,TIPO,HASH,FECHA):
+                    HORA_INICIO = db.timeSQLFormat(valuesAct['-HORAINICIO-'],valuesAct['-MINUTOSINICIO-'])
+                    HORA_FINAL  = db.timeSQLFormat(valuesAct['-HORAFINAL-'],valuesAct['-MINUTOSFINAL-'])
+
+                    print(NAME,DESC,TIPO,HASH,FECHA,HORA_INICIO,HORA_FINAL)
+
+                    if db.addActividad(NAME,DESC,TIPO,HASH,FECHA,HORA_INICIO,HORA_FINAL):
                         windowAct.close()
                     else:
                         windowAct['-CONFACT-'].update('Ha habido un error al crear la actividad')
