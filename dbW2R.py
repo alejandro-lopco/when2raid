@@ -587,3 +587,143 @@ def delHoras(actID,user):
         print(f'Error al generar la actividad: {ErrorConexion}')
         cnx.rollback()
         return False
+    
+def formatActSelect(actividades):
+    misActividades      = []
+
+    for x in actividades:
+        actInfo = getActInfo(x[0])
+        listaInfo = [list(y) for y in actInfo]
+
+        if listaInfo[0][4] is not None:
+            listaInfo[0][4] = True
+        else:
+            listaInfo[0][4] = False
+
+        listaInfo[0][3] = getTypeName(listaInfo[0][3])
+
+        misActividades += listaInfo
+
+    return misActividades
+
+def nameSearch(name):
+    try:
+        cnx = sql.connect(
+            host    =CONF['DATABASE']['hostname'],
+            database=CONF['DATABASE']['db_name'],
+            user    =CONF['DATABASE']['db_user'],
+            password=''
+        )
+
+        cursor  = cnx.cursor()
+
+        qrySearch = 'SELECT * FROM actividades WHERE nombre_actividad = %s'
+        cursor.execute(qrySearch,(name,))
+
+        rslt = cursor.fetchall()
+
+        cnx.commit()
+
+        return rslt
+    except Error as ErrorConexion:
+        print(f'Error al generar la actividad: {ErrorConexion}')
+        cnx.rollback()
+        return False
+
+def authorSearch(autor):
+    try:
+        cnx = sql.connect(
+            host    =CONF['DATABASE']['hostname'],
+            database=CONF['DATABASE']['db_name'],
+            user    =CONF['DATABASE']['db_user'],
+            password=''
+        )
+
+        cursor  = cnx.cursor()
+
+        qrySearch = 'SELECT * FROM actividades WHERE autor = %s'
+        cursor.execute(qrySearch,(autor,))
+
+        rslt = cursor.fetchall()
+
+        cnx.commit()
+
+        return rslt
+    except Error as ErrorConexion:
+        print(f'Error al generar la actividad: {ErrorConexion}')
+        cnx.rollback()
+        return False
+
+def typeSearch(typeName):
+    try:
+        typeID = getTypeID(typeName)
+
+        cnx = sql.connect(
+            host    =CONF['DATABASE']['hostname'],
+            database=CONF['DATABASE']['db_name'],
+            user    =CONF['DATABASE']['db_user'],
+            password=''
+        )
+
+        cursor  = cnx.cursor()
+
+        qrySearch = 'SELECT * FROM actividades WHERE tipo_actividad = %s'
+        cursor.execute(qrySearch,(typeID,))
+
+        rslt = cursor.fetchall()
+
+        cnx.commit()
+
+        return rslt
+    except Error as ErrorConexion:
+        print(f'Error al generar la actividad: {ErrorConexion}')
+        cnx.rollback()
+        return False
+
+def privateSearch(typeName):
+    try:
+        cnx = sql.connect(
+            host    =CONF['DATABASE']['hostname'],
+            database=CONF['DATABASE']['db_name'],
+            user    =CONF['DATABASE']['db_user'],
+            password=''
+        )
+
+        cursor  = cnx.cursor()
+
+        qrySearch = 'SELECT * FROM actividades WHERE passwd_actividad != NULL;'
+        cursor.execute(qrySearch)
+
+        rslt = cursor.fetchall()
+
+        cnx.commit()
+
+        return rslt
+    except Error as ErrorConexion:
+        print(f'Error al generar la actividad: {ErrorConexion}')
+        cnx.rollback()
+        return False
+
+def dateSearch(date):
+    try:
+        cnx = sql.connect(
+            host    =CONF['DATABASE']['hostname'],
+            database=CONF['DATABASE']['db_name'],
+            user    =CONF['DATABASE']['db_user'],
+            password=''
+        )
+
+        cursor  = cnx.cursor()
+
+        qrySearch = 'SELECT * FROM actividades WHERE fecha = %s;'
+        cursor.execute(qrySearch,(date,))
+
+        rslt = cursor.fetchall()
+
+        cnx.commit()
+
+        return rslt
+    except Error as ErrorConexion:
+        print(f'Error al generar la actividad: {ErrorConexion}')
+        cnx.rollback()
+        return False    

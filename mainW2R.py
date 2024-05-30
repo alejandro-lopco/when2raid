@@ -27,19 +27,7 @@ def setupMainGUI():
     actApuntado         = db.getApuntadas(CONFIG['USER']['default'])
     listaActividades    = [list(x) for x in actApuntado]
     global misActividades
-    misActividades      = []
-    for x in listaActividades:
-        actInfo = db.getActInfo(x[0])
-        listaInfo = [list(y) for y in actInfo]
-
-        if listaInfo[0][4] is not None:
-            listaInfo[0][4] = True
-        else:
-            listaInfo[0][4] = False
-
-        listaInfo[0][3] = db.getTypeName(listaInfo[0][3])
-
-        misActividades += listaInfo
+    misActividades = db.formatActSelect(listaActividades)
 
     HOME_DEF = [
         [sg.Text(f'Bienvenido {CONFIG['USER']['default']}',
@@ -108,8 +96,9 @@ def setupMainGUI():
         [sg.Table(values=misActividades,
                   headings=HEADER,
                   expand_x=True,
-                  expand_y=True)],
-        [sg.Button('Detalle',
+                  expand_y=True,
+                  key='-RSLTSEARCH-')],
+        [sg.Button('Detalle Busqueda',
                    expand_x=True,
                    expand_y=True)]
     ]
@@ -677,7 +666,7 @@ def main():
             cnf.defaultUser('')
             lg.main()
             break
-
+        # Eventos TAB Actividades
         if event == 'Editar':
             try:
                 actData = values['-TABLA-'][0]
@@ -745,6 +734,35 @@ def main():
 
             window.close()
             window = setupMainGUI()
+        # Eventos Busqueda
+        if event == 'Buscar':
+            if values['-FILTRO-'] == 'Nombre de la actividad':
+                rsltBusqueda = db.nameSearch(values['-SEARCH-'])
+                listaBusqueda = db.formatActSelect(rsltBusqueda)
+
+                window['-RSLTSEARCH-'].update(values=listaBusqueda)
+            if values['-FILTRO-'] == 'Autor de la actividad':
+                rsltBusqueda = db.authorSearch(values['-SEARCH-'])
+                listaBusqueda = db.formatActSelect(rsltBusqueda)
+
+                window['-RSLTSEARCH-'].update(values=listaBusqueda)
+            if values['-FILTRO-'] == 'Pelea específica':
+                rsltBusqueda = db.typeSearch(values['-SEARCH-'])
+                listaBusqueda = db.formatActSelect(rsltBusqueda)
+
+                window['-RSLTSEARCH-'].update(values=listaBusqueda)
+            if values['-FILTRO-'] == 'Actividad Privada':
+                rsltBusqueda = db.privateSearch(values['-SEARCH-'])
+                listaBusqueda = db.formatActSelect(rsltBusqueda)
+
+                window['-RSLTSEARCH-'].update(values=listaBusqueda)
+
+            if values['-FILTRO-'] == 'Fecha de la actividad':
+                rsltBusqueda = db.dateSearch(values['-SEARCH-'])
+                listaBusqueda = db.formatActSelect(rsltBusqueda)
+
+                window['-RSLTSEARCH-'].update(values=listaBusqueda)
+
 
 if __name__ == '__main__':
     main()
