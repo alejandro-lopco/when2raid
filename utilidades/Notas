@@ -1,11 +1,15 @@
-#POR HACER TODAVÍA
-    -   Buscador de actividades
+[POR HACER TODAVÍA]
     -   Buscador de tipos
     -   Opciones en mainW2R
+    -   Asociar una imagen a cada tipo
+[HACIENDO AHORA]
+    -   Buscador de actividades
+[HECHO]
+    -   En el caso de no ser el autor de una actividad, permitir editar las horas o desapuntarse
+    -   Vista de detalle de actividad
+    -   Borrar Actividad
     -   Configurar valores máximos en las horas
-#HACIENDO AHORA
     -   Archivo de plantilla para hacer pruebas en la base de datos
-#HECHO
     -   Edición da actividades
     -   Esquema de muestra de información en la Tab actividades
     -   Insertar los datos de la GUI de creación a la tabla de horas disponibles
@@ -21,8 +25,3 @@
     -   Parsear las opciones para cogerlas directamente del archivo .ini
     -   El proceso de login
     -   Crear Usuarios
-#PENSANDO HACER
-    -   Asociar una imagen a cada tipo
-    -   Cambiar el cambio nuevas ventanas cambiando el layout y no abrir una ventana aparte
-    -   Organizar los módulos de dbW2R.py y configW2R.py con objetos
-    -   Implementar en la GUI los handlers

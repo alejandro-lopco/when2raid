@@ -251,6 +251,39 @@ def getHorasDisponibles(act,user):
         print(f'Error al buscar el tipo: {ErrorConexion}')
         cnx.rollback()
 
+def getAllHorasDisponibles(act):
+    try:
+        # Nos conectamos a la base de datos
+        cnx = sql.connect(
+            host    =CONF['DATABASE']['hostname'],
+            database=CONF['DATABASE']['db_name'],
+            user    =CONF['DATABASE']['db_user'],
+            password=''
+        )
+
+        cursor      = cnx.cursor()
+        qryHoras    = "SELECT id_usuario,hora_inicio,hora_final FROM horas_disponibles WHERE id_actividad = %s;"
+
+        cursor.execute(qryHoras,(act,))
+
+        rslt = cursor.fetchall()
+        listaHoras = []
+        cont = 0
+        for x in rslt:
+            horaUnica = []
+            horaUnica.insert(0,x[0])
+            horaUnica.insert(1,timeDeltaHoras(x[1]))
+            horaUnica.insert(2,timeDeltaHoras(x[2]))
+            listaHoras.insert(cont,horaUnica)
+            cont += 1
+
+        cnx.commit()
+
+        return listaHoras
+    except Error as ErrorConexion:
+        print(f'Error al buscar el tipo: {ErrorConexion}')
+        cnx.rollback()
+
 def timeDeltaHoras(timeDelta):
     SEGUNDOS    = int(timeDelta.total_seconds())
 
@@ -396,6 +429,7 @@ def getActInfo(id):
         return None
     
 def autorAct(actId):
+    UPDT_CONF = ini.getCnf()
     try:
         cnx = sql.connect(
             host    =CONF['DATABASE']['hostname'],
@@ -405,14 +439,14 @@ def autorAct(actId):
         )
         cursor = cnx.cursor()
 
-        qry = 'SELECT usuario FROM log_actividades WHERE id_actividad = %s'
+        qry = 'SELECT autor FROM actividades WHERE id_actividad = %s'
         cursor.execute(qry,(actId,))
 
         rslt = cursor.fetchone()
 
         cnx.commit()
 
-        if rslt[0] == CONF['USER']['default']:
+        if rslt[0] == UPDT_CONF['USER']['default']:
             return True
         else:
             return False
@@ -425,12 +459,7 @@ def horaMin():
     HORAS   = [x for x in range(0,24)]
     MINUTOS = [y for y in range(0,60)]
 
-    VAL_MAX = { #Quedan las comprobaciones de valor máximo
-        'HORA'  : (0,23),
-        'MIN'   : (0,59)
-    }
-
-    return HORAS,MINUTOS,VAL_MAX
+    return HORAS,MINUTOS
 
 def updateActividad(
     id_act,
@@ -485,7 +514,7 @@ def updateActividad(
         return False
 
 def updateHorasDisponibles(
-    id_act,
+    actID,
     user,
     horaInicio,
     horaFinal      
@@ -499,18 +528,62 @@ def updateHorasDisponibles(
         )
 
         cursor  = cnx.cursor()
-                
-        qryTime = 'UPDATE horas_disponibles SET hora_inicio = %s, hora_final = %s WHERE id_actividad = %s AND id_usuario = %s;'
-        cursor.execute(qryTime,(
-            horaInicio,
-            horaFinal,
-            id_act,
-            user))
-        
+
+        qryDropHoras = 'UPDATE horas_disponibles SET hora_inicio = %s, hora_final = %s WHERE id_actividad = %s AND id_usuario = %s'
+        cursor.execute(qryDropHoras,(horaInicio,horaFinal,actID,user))        
+
         cnx.commit()
 
         return True
     except Error as ErrorConexion:
         print(f'Error al generar la actividad: {ErrorConexion}')
         cnx.rollback()
-        return False    
+        return False
+
+    
+def deleteAct(actID):
+    try:
+        cnx = sql.connect(
+            host    =CONF['DATABASE']['hostname'],
+            database=CONF['DATABASE']['db_name'],
+            user    =CONF['DATABASE']['db_user'],
+            password=''
+        )
+
+        cursor  = cnx.cursor()
+
+        qryDropHoras = 'DELETE FROM horas_disponibles WHERE id_actividad = %s'
+        cursor.execute(qryDropHoras,(actID,))        
+
+        qryDropAct = 'DELETE FROM actividades WHERE id_actividad = %s'
+        cursor.execute(qryDropAct,(actID,))
+
+        cnx.commit()
+
+        return True
+    except Error as ErrorConexion:
+        print(f'Error al generar la actividad: {ErrorConexion}')
+        cnx.rollback()
+        return False
+    
+def delHoras(actID,user):
+    try:
+        cnx = sql.connect(
+            host    =CONF['DATABASE']['hostname'],
+            database=CONF['DATABASE']['db_name'],
+            user    =CONF['DATABASE']['db_user'],
+            password=''
+        )
+
+        cursor  = cnx.cursor()
+
+        qryDropHoras = 'DELETE FROM horas_disponibles WHERE id_actividad = %s AND id_usuario = %s'
+        cursor.execute(qryDropHoras,(actID,user))        
+
+        cnx.commit()
+
+        return True
+    except Error as ErrorConexion:
+        print(f'Error al generar la actividad: {ErrorConexion}')
+        cnx.rollback()
+        return False

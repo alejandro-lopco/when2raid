@@ -36,8 +36,7 @@ CREATE TABLE log_actividades (
     id_log INT AUTO_INCREMENT PRIMARY KEY,
     id_actividad INT NOT NULL,
     usuario VARCHAR(16),
-    fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-    FOREIGN KEY (id_actividad) REFERENCES actividades(id_actividad)
+    fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP()
 ) ENGINE=INNODB;
 CREATE TABLE log_usuarios (
     id_log INT AUTO_INCREMENT PRIMARY KEY,
@@ -78,3 +77,53 @@ GRANT SELECT ON when2raid.log_actividades TO 'usuario_final'@'%';
 GRANT SELECT, UPDATE, INSERT, DELETE ON when2raid.horas_disponibles TO 'usuario_final'@'%';
 
 FLUSH PRIVILEGES;
+
+INSERT INTO when2raid.tipos (nombre_tipo) VALUES
+    ("The Epic of Alexander (Ultimate)"),
+    ("The Unending Coil of Bahamut (Ultimate)"),
+    ("The Weapon's Refrain (Ultimate)"),
+    ("Dragonsong's Reprise (Ultimate)"),
+    ("The Omega Protocol (Ultimate)"),
+    ("Futures Rewritten (Ultimate)"),
+    ("The Binding Coil of Bahamut"),
+    ("The Second Coil of Bahamut"),
+    ("The Second Coil of Bahamut (Savage)"),
+    ("The Final Coil of Bahamut"),
+    ("Alexander: Gordias"),
+    ("Alexander: Gordias (Savage)"),
+    ("Alexander: Midas"),
+    ("Alexander: Midas (Savage)"),
+    ("Alexander: The Creator"),
+    ("Alexander: The Creator (Savage)"),
+    ("Omega: Deltascape"),
+    ("Omega: Deltascape (Savage)"),
+    ("Omega: Sigmascape"),
+    ("Omega: Sigmascape (Savage)"),
+    ("Omega: Alphascape"),
+    ("Omega: Alphascape (Savage)"),
+    ("Eden's Gate"),
+    ("Eden's Gate (Savage)"),
+    ("Eden's Verse"),
+    ("Eden's Verse (Savage)"),
+    ("Eden's Promise"),
+    ("Eden's Promise (Savage)"),
+    ("Pandaemonium: Asphodelos"),
+    ("Pandaemonium: Asphodelos (Savage)"),
+    ("Pandaemonium: Abyssos"),
+    ("Pandaemonium: Abyssos (Savage)"),
+    ("Pandaemonium: Anabaseios"),
+    ("Pandaemonium: Anabaseios (Savage)	");
+
+INSERT INTO when2raid.usuarios VALUES 
+    ('alex','4135aa9dc1b842a653dea846903ddb95bfb8c5a10c504a7fa16e10bc31d1fdf0','alex'),
+    ('pepe','7c9e7c1494b2684ab7c19d6aff737e460fa9e98d5a234da1310c97ddf5691834','pepe'),
+    ('test','9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08','test');
+
+INSERT INTO when2raid.actividades VALUES
+    (1,'Early Omega Prog','hello world prog',5,'7c9e7c1494b2684ab7c19d6aff737e460fa9e98d5a234da1310c97ddf5691834','2024-05-31','alex'),
+    (2,'Tea Kill Party','Fate B into kill',1,NULL,'2024-06-04','pepe');
+
+INSERT INTO when2raid.horas_disponibles VALUES
+    (1,'alex','22:30:00','23:55:00'),
+    (2,'pepe','18:45:00','21:35:00'),
+    (2,'alex','19:30:00','22:00:00');
