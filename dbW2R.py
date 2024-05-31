@@ -241,11 +241,14 @@ def getHorasDisponibles(act,user):
 
         rslt = cursor.fetchone()
 
-        horaInicio  = timeDeltaHoras(rslt[0])
-        horaFinal   = timeDeltaHoras(rslt[1])
+        if rslt is not None:
+            horaInicio  = timeDeltaHoras(rslt[0])
+            horaFinal   = timeDeltaHoras(rslt[1])
 
-        horasAct = [horaInicio,horaFinal]
-
+            horasAct = [horaInicio,horaFinal]
+        else:
+            return None
+        
         return horasAct
     except Error as ErrorConexion:
         print(f'Error al buscar el tipo: {ErrorConexion}')
@@ -253,6 +256,12 @@ def getHorasDisponibles(act,user):
 
 def getAllHorasDisponibles(act):
     try:
+        if isinstance(act, int):
+            idAct = act
+        elif isinstance(act, (list, tuple)) and len(act) > 0:
+            idAct = act[0]
+        else:
+            raise ValueError(f"Valor no esperado (qué haces tio.): {act}")          
         # Nos conectamos a la base de datos
         cnx = sql.connect(
             host    =CONF['DATABASE']['hostname'],
@@ -264,18 +273,16 @@ def getAllHorasDisponibles(act):
         cursor      = cnx.cursor()
         qryHoras    = "SELECT id_usuario,hora_inicio,hora_final FROM horas_disponibles WHERE id_actividad = %s;"
 
-        cursor.execute(qryHoras,(act,))
+        cursor.execute(qryHoras,(idAct,))
 
         rslt = cursor.fetchall()
         listaHoras = []
-        cont = 0
         for x in rslt:
             horaUnica = []
-            horaUnica.insert(0,x[0])
-            horaUnica.insert(1,timeDeltaHoras(x[1]))
-            horaUnica.insert(2,timeDeltaHoras(x[2]))
-            listaHoras.insert(cont,horaUnica)
-            cont += 1
+            horaUnica.append(x[0])
+            horaUnica.append(timeDeltaHoras(x[1]))
+            horaUnica.append(timeDeltaHoras(x[2]))
+            listaHoras.append(horaUnica)
 
         cnx.commit()
 
@@ -338,7 +345,10 @@ def getTypeID(typeName):
 
         cnx.commit()
 
-        return rslt[0]
+        if rslt is not None:
+            return rslt[0]
+        else: 
+            return None
     
     except Error as ErrorConexion:
         print(f'Error al buscar el tipo: {ErrorConexion}')    
@@ -407,6 +417,13 @@ def getApuntadas(user):
 
 def getActInfo(id):
     try:
+        if isinstance(id, int):
+            idAct = id
+        elif isinstance(id, (list, tuple)) and len(id) > 0:
+            idAct = id[0]
+        else:
+            raise ValueError(f"Valor no esperado (qué haces tio.): {id}")  
+                 
         cnx = sql.connect(
             host    =CONF['DATABASE']['hostname'],
             database=CONF['DATABASE']['db_name'],
@@ -416,7 +433,7 @@ def getActInfo(id):
         cursor = cnx.cursor()
 
         qry = 'SELECT * FROM actividades WHERE id_actividad = %s'
-        cursor.execute(qry,(id,))
+        cursor.execute(qry,(idAct,))
 
         rslt = cursor.fetchall()
 
@@ -527,10 +544,17 @@ def updateHorasDisponibles(
             password=''
         )
 
-        cursor  = cnx.cursor()
+        cursor  = cnx.cursor(buffered=True)
 
-        qryDropHoras = 'UPDATE horas_disponibles SET hora_inicio = %s, hora_final = %s WHERE id_actividad = %s AND id_usuario = %s'
-        cursor.execute(qryDropHoras,(horaInicio,horaFinal,actID,user))        
+        qryHoras    = "SELECT id_usuario,hora_inicio,hora_final FROM horas_disponibles WHERE id_actividad = %s AND id_usuario = %s;"
+        rslt = cursor.execute(qryHoras,(actID,user))
+        
+        if rslt is None:
+            qryNewHoras = 'INSERT INTO horas_disponibles (id_actividad,id_usuario,hora_inicio,hora_final) VALUES (%s,%s,%s,%s)'
+            cursor.execute(qryNewHoras,(actID,user,horaInicio,horaFinal))
+        else:
+            qryNewHoras = 'UPDATE horas_disponibles SET hora_inicio = %s, hora_final = %s WHERE id_actividad = %s AND id_usuario = %s'
+            cursor.execute(qryNewHoras,(horaInicio,horaFinal,actID,user))
 
         cnx.commit()
 

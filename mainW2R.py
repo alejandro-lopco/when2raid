@@ -5,8 +5,6 @@ import configW2R as cnf
 import datetime
 
 def setupMainGUI():
-    global CONFIG
-    CONFIG = cnf.getCnf()
     sg.theme(cnf.getTheme())
 
     # Definición de opciones en la toolbar
@@ -24,10 +22,6 @@ def setupMainGUI():
         'Fecha',
         'Autor'
     ]
-    actApuntado         = db.getApuntadas(CONFIG['USER']['default'])
-    listaActividades    = [list(x) for x in actApuntado]
-    global misActividades
-    misActividades = db.formatActSelect(listaActividades)
 
     HOME_DEF = [
         [sg.Text(f'Bienvenido {CONFIG['USER']['default']}',
@@ -48,7 +42,7 @@ def setupMainGUI():
         [sg.Table(
             values=misActividades,
             headings=HEADER,
-            alternating_row_color='black',
+            alternating_row_color=sg.theme_input_background_color(),
             expand_x=True,
             expand_y=True,
             key='-TABLA-',
@@ -66,6 +60,15 @@ def setupMainGUI():
         'Pelea específica',
         'Actividad Privada',
         'Fecha de la actividad'
+    ]
+    DEFAULT_SEARCH = [
+        ['No',
+         'has',
+        'seleccionado',
+        'nada',
+        'como',
+        'filtro',
+        ':(']
     ]
 
     SEARCH_DEF = [
@@ -93,22 +96,24 @@ def setupMainGUI():
                  font=('Arial bold',24),
                  justification='center',
                  expand_x=True)],
-        [sg.Table(values=misActividades,
+        [sg.Table(values=DEFAULT_SEARCH,
                   headings=HEADER,
                   expand_x=True,
                   expand_y=True,
+                  alternating_row_color=sg.theme_input_background_color(),
                   key='-RSLTSEARCH-')],
         [sg.Button('Detalle Busqueda',
-                   expand_x=True,
-                   expand_y=True)]
+                   font=('Arial italic',22),
+                   border_width=(12),
+                   expand_x=True
+                   )]
     ]
 
     TYPE_DEF = [
         [sg.Text('Peleas disponibles',
-                 font=('Arial italic',22),
+                 font=('Arial bold',22),
                  pad=(50,10),
                  expand_x=True)],
-        [sg.Text(': ')]
     ]
 
     OPC_DEF = [
@@ -504,12 +509,25 @@ def setupHorasGUI(act):
     sg.theme(cnf.getTheme())
 
     HORAS, MINUTOS = db.horaMin()
+
+    if isinstance(act, int):
+        idAct = act
+    elif isinstance(act, (list, tuple)) and len(act) > 0:
+        idAct = act[0]
+    else:
+        raise ValueError(f"Valor no esperado (qué haces tio.): {act}")
     
-    horasDisponibles    = db.getHorasDisponibles(act[0],CONFIG['USER']['default'])
-    horaInicio          = horasDisponibles[0][0:2]
-    minutosInicio       = horasDisponibles[0][3:5]
-    horaFinal           = horasDisponibles[1][0:2]
-    minutosFinal        = horasDisponibles[1][3:5]    
+    horasDisponibles    = db.getHorasDisponibles(idAct,CONFIG['USER']['default'])
+    if horasDisponibles is not None:
+        horaInicio          = horasDisponibles[0][0:2]
+        minutosInicio       = horasDisponibles[0][3:5]
+        horaFinal           = horasDisponibles[1][0:2]
+        minutosFinal        = horasDisponibles[1][3:5]    
+    else:
+        horaInicio          = '00'
+        minutosInicio       = '00'
+        horaFinal           = '00'
+        minutosFinal        = '00'    
 
     HORAS_DEF = [
         [sg.Text()],
@@ -585,7 +603,14 @@ def loopHorasGUI(act,windowsHoras):
                 horaInicio  = db.timeSQLFormat(valuesHoras['-HORAINICIO-'],valuesHoras['-MINUTOSINICIO-'])
                 horaFinal   = db.timeSQLFormat(valuesHoras['-HORAFINAL-'],valuesHoras['-MINUTOSFINAL-'])
 
-                if db.updateHorasDisponibles(act[0],CONFIG['USER']['default'],horaInicio,horaFinal):
+                if isinstance(act, int):
+                    idAct = act
+                elif isinstance(act, (list, tuple)) and len(act) > 0:
+                    idAct = act[0]
+                else:
+                    raise ValueError(f"Valor no esperado (qué haces tio.): {act}")                
+
+                if db.updateHorasDisponibles(idAct,CONFIG['USER']['default'],horaInicio,horaFinal):
                     sg.popup('Horas actualizadas correctamente')
                     break
                 else:
@@ -603,8 +628,15 @@ def setupDetailGUI(act):
         'Hora Inicio',
         'Hora Final'
     ]
-    ACT = db.getActInfo(act)
-    ACT_INFO = ACT[0]
+    
+    if isinstance(act, int):
+        ACT         = db.getActInfo(act)
+        ACT_INFO    = ACT[0]
+    elif isinstance(act, (list, tuple)) and len(act) > 0:
+        ACT         = db.getActInfo(act[0])
+        ACT_INFO    = ACT[0]
+    else:
+        raise ValueError(f"Valor no esperado (qué haces tio.): {act}")         
 
     DETAIL_DEF = [
         [sg.Text(f'Detalle de la actividad "{ACT_INFO[1]}"',
@@ -628,11 +660,19 @@ def setupDetailGUI(act):
                  expand_x=True)],
         [sg.Table(values=LISTADO_HORAS,
                   headings=HEADINGS,
-                  alternating_row_color='black',
+                  alternating_row_color=sg.theme_input_background_color(),
                   expand_x=True,
                   expand_y=True,
                   font=('Arial',22),
-                  key='-TABLA-')]
+                  key='-TABLA-')],
+        [sg.Button('Apuntarse',
+                   font=('Arial italic',22),
+                   border_width=(12),
+                   expand_x=True,
+                   expand_y=True)],
+        [sg.Text('',
+                 pad=(25,5),
+                 key='-CONFAPT-',)]
     ]
 
     windowDetail = sg.Window('Detalles de la actividad',
@@ -650,15 +690,28 @@ def loopDetailGUI(windowDetail,actData):
         if eventDetail == sg.WIN_CLOSED or eventDetail == 'Salir':
             break
 
-    windowDetail.close()
+        if eventDetail == 'Apuntarse':
+            windowHoras = setupHorasGUI(actData)
+            loopHorasGUI(actData,windowHoras)
+
+            windowHoras.close()
+
+            windowDetail.close()
+            windowDetail = setupDetailGUI(actData)
 
 def main():
+    global CONFIG, misActividades
+    CONFIG = cnf.getCnf()
+    actApuntado         = db.getApuntadas(CONFIG['USER']['default'])
+    listaActividades    = [list(x) for x in actApuntado]
+    misActividades = db.formatActSelect(listaActividades) 
+
     window = setupMainGUI()
 
     while True:
         event, values = window.read()
 
-        if event == sg.WIN_CLOSED:
+        if event == sg.WIN_CLOSED or event == 'Salir':
             break
 
         if event == 'Cerrar Sesión':
@@ -677,7 +730,7 @@ def main():
                     windowEdit.close()
 
                     window.close()
-                    window = setupMainGUI()
+                    main()
                 else:
                     windowHoras = setupHorasGUI(misActividades[actData])
                     loopHorasGUI(misActividades[actData],windowHoras)
@@ -685,7 +738,7 @@ def main():
                     windowHoras.close()
 
                     window.close()
-                    window = setupMainGUI()                    
+                    main()                 
             except IndexError:
                 sg.popup('No ha seleccionado ninguna actividad')
             except Exception as e:
@@ -701,14 +754,14 @@ def main():
                             sg.popup('Se ha borrardo correctamente la actividad')                        
 
                             window.close()
-                            window = setupMainGUI()
+                            main()
                 else:
                     if sg.popup_yes_no('¿Estás seguro de que quieres desapuntarte de esta actividad?') == 'Yes':
                         if db.delHoras(misActividades[actData][0],CONFIG['USER']['default']):
                             sg.popup('Te has desapuntado correctamente de la actividad')
 
                             window.close()
-                            window = setupMainGUI()
+                            main()
             except IndexError:
                 sg.popup('No ha seleccionado ninguna actividad')
             except Exception as e:
@@ -718,7 +771,7 @@ def main():
         if event == 'Detalle':
             try:
                 actData = values['-TABLA-'][0]
-                windowDetail = setupDetailGUI(misActividades[actData][0])
+                windowDetail = setupDetailGUI(misActividades[actData])
                 loopDetailGUI(windowDetail,actData)
 
                 windowDetail.close()
@@ -733,7 +786,7 @@ def main():
             windowAct.close()
 
             window.close()
-            window = setupMainGUI()
+            main()
         # Eventos Busqueda
         if event == 'Buscar':
             if values['-FILTRO-'] == 'Nombre de la actividad':
@@ -763,6 +816,20 @@ def main():
 
                 window['-RSLTSEARCH-'].update(values=listaBusqueda)
 
+        if event == 'Detalle Busqueda':
+            try:
+                idRowTabla      = values['-RSLTSEARCH-'][0]
+                actData         = rsltBusqueda[idRowTabla][0]
+                windowDetail    = setupDetailGUI(actData)
+                loopDetailGUI(windowDetail,actData)
 
-if __name__ == '__main__':
+                windowDetail.close()
+
+                window.close()
+                main()
+            except Exception as e:
+                sg.popup('Error detallando la actividad')
+                print(f'Error:{e}')            
+
+if __name__ == '__main__':    
     main()
