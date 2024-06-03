@@ -109,11 +109,35 @@ def setupMainGUI():
                    )]
     ]
 
+    types = db.getTypes()
+
     TYPE_DEF = [
         [sg.Text('Peleas disponibles',
                  font=('Arial bold',22),
                  pad=(50,10),
                  expand_x=True)],
+        [sg.Text(f'Nombre: ',
+                 pad=(25,5)),
+         sg.Combo(values=types,
+                  default_value='Seleccione una pelea',
+                  expand_x= True,
+                  font=(24),
+                  readonly=True,
+                  enable_events=True,
+                  key='-TYPESEL-')],
+        [sg.Text('',
+                 pad=(50,10),
+                 font=('Arial italic', 18),
+                 key='-TYPENAME-')],
+        [sg.Multiline('',
+                      expand_y=True,
+                      pad=(50,10),
+                      key='-TYPEDESC-'),
+         sg.Image(source=r'./img/Placeholder.png',
+                  size=(300,300),
+                  expand_x=True,
+                  pad=(50,10),
+                  key='TYPEIMG')]
     ]
 
     OPC_DEF = [
@@ -121,7 +145,8 @@ def setupMainGUI():
                  font=('Arial bold',22),
                  pad=(50,10),
                  expand_x=True)],
-        [sg.Text('Resultados: ')], 
+        [sg.Text('Configuración del programa: '),
+         ]
     ]
 
     layout = [
@@ -683,7 +708,8 @@ def setupDetailGUI(act):
     
     return windowDetail
 
-def loopDetailGUI(windowDetail,actData):
+def loopDetailGUI(windowDetail,actID):
+    actData = db.getActInfo(actID)
     while True:
         eventDetail, valuesDetails = windowDetail.read()
 
@@ -691,13 +717,18 @@ def loopDetailGUI(windowDetail,actData):
             break
 
         if eventDetail == 'Apuntarse':
-            windowHoras = setupHorasGUI(actData)
-            loopHorasGUI(actData,windowHoras)
+            if actData[0][4] is not None:
+                tryPasswd = sg.popup_get_text('Indica la contraseña de la actividad:')
+                if db.passwdHash(tryPasswd) == actData[0][4]:
+                    windowHoras = setupHorasGUI(actID)
+                    loopHorasGUI(actID,windowHoras)
 
-            windowHoras.close()
+                    windowHoras.close()
 
-            windowDetail.close()
-            windowDetail = setupDetailGUI(actData)
+                    windowDetail.close()
+                    windowDetail = setupDetailGUI(actID)
+                else:
+                    sg.popup('Contraseña incorrecta')
 
 def main():
     global CONFIG, misActividades
@@ -830,6 +861,14 @@ def main():
             except Exception as e:
                 sg.popup('Error detallando la actividad')
                 print(f'Error:{e}')            
+        # Eventos Tipos
+        if values['-TYPESEL-'] != 'Seleccione una pelea':
+            typeInfo = db.getTypeInfo(values['-TYPESEL-'])
+            window['-TYPENAME-'].update(typeInfo[0][0])
+            window['-TYPEDESC-'].update(typeInfo[0][1])
+            
+            filename = typeInfo[0][0] + '.png'
+            window['-TYPEIMG-'].update(source=filename)
 
-if __name__ == '__main__':    
+if __name__ == '__main__':
     main()

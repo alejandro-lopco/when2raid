@@ -750,4 +750,28 @@ def dateSearch(date):
     except Error as ErrorConexion:
         print(f'Error al generar la actividad: {ErrorConexion}')
         cnx.rollback()
-        return False    
+        return False
+    
+def getTypeInfo(typeName):
+    try:
+        cnx = sql.connect(
+            host    =CONF['DATABASE']['hostname'],
+            database=CONF['DATABASE']['db_name'],
+            user    =CONF['DATABASE']['db_user'],
+            password=''
+        )
+
+        cursor  = cnx.cursor()
+
+        qrySearch = 'SELECT nombre_tipo,desc_tipo FROM tipos WHERE nombre_tipo = %s;'
+        cursor.execute(qrySearch,(typeName,))
+
+        rslt = cursor.fetchall()
+
+        cnx.commit()
+
+        return rslt
+    except Error as ErrorConexion:
+        print(f'Error al generar la actividad: {ErrorConexion}')
+        cnx.rollback()
+        return False
