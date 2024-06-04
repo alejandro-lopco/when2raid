@@ -3,6 +3,8 @@ import loginW2R as lg
 import dbW2R as db
 import configW2R as cnf
 import datetime
+from PIL import Image                    
+
 
 def setupMainGUI():
     sg.theme(cnf.getTheme())
@@ -131,13 +133,14 @@ def setupMainGUI():
                  key='-TYPENAME-')],
         [sg.Multiline('',
                       expand_y=True,
-                      pad=(50,10),
+                      pad=(50,30),
                       key='-TYPEDESC-'),
          sg.Image(source=r'./img/Placeholder.png',
-                  size=(300,300),
+                  size=(720,405),
                   expand_x=True,
-                  pad=(50,10),
-                  key='TYPEIMG')]
+                  expand_y=True,
+                  pad=(50,30),
+                  key='-TYPEIMG-')]
     ]
 
     OPC_DEF = [
@@ -176,7 +179,7 @@ def setupMainGUI():
     # Inicialización de la ventana
     window = sg.Window(
         'When2Raid',
-        layout,size=(1224,612),
+        layout,size=(1424,812),
         font=('Arial'),
         resizable=True,
         finalize=True
@@ -730,6 +733,11 @@ def loopDetailGUI(windowDetail,actID):
                 else:
                     sg.popup('Contraseña incorrecta')
 
+def resizeImg(inputImage,outputImage,ancho,alto):
+    original_image = Image.open(inputImage)
+    resized_image = original_image.resize((ancho, alto))
+    resized_image.save(outputImage)
+
 def main():
     global CONFIG, misActividades
     CONFIG = cnf.getCnf()
@@ -867,7 +875,9 @@ def main():
             window['-TYPENAME-'].update(typeInfo[0][0])
             window['-TYPEDESC-'].update(typeInfo[0][1])
             
-            filename = typeInfo[0][0] + '.png'
+
+            filename = './img/' + typeInfo[0][0] + '.png'
+            resizeImg(filename,filename,720,405)
             window['-TYPEIMG-'].update(source=filename)
 
 if __name__ == '__main__':
