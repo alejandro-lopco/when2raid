@@ -148,8 +148,36 @@ def setupMainGUI():
                  font=('Arial bold',22),
                  pad=(50,10),
                  expand_x=True)],
-        [sg.Text('Configuración del programa: '),
-         ]
+        [sg.Text('Dirección de la base de datos',
+                 font=('Arial italic',18),
+                 pad=(75,25)),
+         sg.InputText(default_text=CONFIG['DATABASE']['hostname'],
+                      pad=(75,25),
+                      expand_x=True,
+                      key='-CNFHOSTNAME-')],
+        [sg.Text('Puerto de la base de datos',
+                 font=('Arial italic',18),
+                 pad=(75,25)),
+         sg.InputText(default_text=CONFIG['DATABASE']['port'],
+                      pad=(75,25),
+                      expand_x=True,
+                      key='-CNFPORT-')],
+        [sg.Text(f'Su tema actual es: {cnf.getTheme()}',
+                 font=('Arial italic',18),
+                 pad=(75,25))],
+        [sg.Listbox(values = sg.theme_list(),
+                      font=('Arial',16),
+                      pad=(75,25),
+                      size =(45, 10),
+                      expand_x=True,
+                      expand_y=True,
+                      default_values=cnf.getTheme(),
+                      key ='-CNFTEMAS-',
+                      enable_events = True)],
+        [sg.Button('Aplicar configuración',
+                   font=('Arial italic',22),
+                   border_width=(12),
+                   expand_x=True)]
     ]
 
     layout = [
@@ -879,6 +907,13 @@ def main():
             filename = './img/' + typeInfo[0][0] + '.png'
             resizeImg(filename,filename,720,405)
             window['-TYPEIMG-'].update(source=filename)
+        # Eventos Opciones
+        if event == 'Aplicar configuración':
+            cnf.writeConfig(values['-CNFHOSTNAME-'],values['-CNFPORT-'],values['-CNFTEMAS-'])
+            sg.popup('El programa se reinicará con la configuración especificada')
 
+            window.close()
+
+            window = setupMainGUI()
 if __name__ == '__main__':
     main()
