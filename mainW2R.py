@@ -408,7 +408,7 @@ def setupEditGUI(act):
     minutosFinal        = horasDisponibles[1][3:5]
 
     EDIT_DEF = [
-            [sg.Text(f'Edita una actividad actividad',
+            [sg.Text(f'Edita una actividad',
                     justification='center',
                     size=(32,1),
                     relief=sg.RELIEF_RIDGE,
@@ -498,9 +498,8 @@ def setupEditGUI(act):
     
     window = sg.Window(
         'When2Raid',
-        EDIT_DEF,
-        return_keyboard_events=True,
-        size=(1024,512),
+        EDIT_DEF, 
+        size=(612,462),
         font=('Arial'),
         resizable=True,
         finalize=True
@@ -760,6 +759,14 @@ def loopDetailGUI(windowDetail,actID):
                     windowDetail = setupDetailGUI(actID)
                 else:
                     sg.popup('Contraseña incorrecta')
+            else:
+                windowHoras = setupHorasGUI(actID)
+                loopHorasGUI(actID,windowHoras)
+
+                windowHoras.close()
+
+                windowDetail.close()
+                windowDetail = setupDetailGUI(actID)                
 
 def resizeImg(inputImage,outputImage,ancho,alto):
     original_image = Image.open(inputImage)
@@ -913,7 +920,6 @@ def main():
             sg.popup('El programa se reinicará con la configuración especificada')
 
             window.close()
-
-            window = setupMainGUI()
+            lg.main()
 if __name__ == '__main__':
     main()

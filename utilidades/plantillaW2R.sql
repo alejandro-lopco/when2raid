@@ -6,8 +6,7 @@ CREATE DATABASE when2raid;
 USE when2raid;
 CREATE TABLE usuarios (
     nombre_usuario VARCHAR(16) PRIMARY KEY,
-    passwd_usuario VARCHAR(64) NOT NULL,
-    nombre_completo VARCHAR(32)
+    passwd_usuario VARCHAR(64) NOT NULL
 ) ENGINE=INNODB;
 CREATE TABLE tipos (
     id_tipo INT AUTO_INCREMENT PRIMARY KEY,
@@ -115,14 +114,21 @@ INSERT INTO when2raid.tipos (nombre_tipo,desc_tipo) VALUES
     ('Pandaemonium Anabaseios',CONCAT_WS('\n\n','Expansión: EndWalker','Parche de salida: 6.4','Sync Item Level: 615','Nivel: 90')),
     ('Pandaemonium Anabaseios (Savage)',CONCAT_WS('\n\n','Expansión: EndWalker','Parche de salida: 6.4','Item Level Mínimo: 630','Item Level Máximo: 660','Nivel: 90'));
 
-INSERT INTO `usuarios` (`nombre_usuario`, `passwd_usuario`, `nombre_completo`) VALUES
-('alex', '4135aa9dc1b842a653dea846903ddb95bfb8c5a10c504a7fa16e10bc31d1fdf0', 'alex'),
-('pepe', '7c9e7c1494b2684ab7c19d6aff737e460fa9e98d5a234da1310c97ddf5691834', 'pepe'),
-('test', '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08', 'test');
+INSERT INTO `usuarios` (`nombre_usuario`, `passwd_usuario`) VALUES
+('alex', '4135aa9dc1b842a653dea846903ddb95bfb8c5a10c504a7fa16e10bc31d1fdf0'),
+('pepe', '7c9e7c1494b2684ab7c19d6aff737e460fa9e98d5a234da1310c97ddf5691834'),
+('test', '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08');
 
 INSERT INTO `actividades` (`id_actividad`, `nombre_actividad`, `descripcion_actividad`, `tipo_actividad`, `passwd_actividad`, `fecha`, `autor`) VALUES
 (1, 'Early Omega Prog', 'hello world prog', 5, '7c9e7c1494b2684ab7c19d6aff737e460fa9e98d5a234da1310c97ddf5691834', '2024-05-31', 'alex'),
 (2, 'Tea Kill Party', 'Fate B into kill', 1, NULL, '2024-06-04', 'pepe'),
-(3, 'test', 'no se lol', 32, NULL, '2024-06-03', 'alex'),
-(5, 'test apuntar 2', 'ayuda', 32, NULL, '2024-06-04', 'pepe'),
-(6, 'test apuntar 3', 'autocritica y seguimos pa alante', 34, NULL, '2024-07-16', 'pepe');
+(3, 'E8S Prog party', 'I like mirrors', 26, NULL, '2024-06-04', 'pepe'),
+(4, 'P8S Prog party', 'ALien Concept Prog', 32, NULL, '2024-07-04', 'alex');
+
+INSERT INTO `horas_disponibles` (`id_actividad`,`id_usuario`,`hora_inicio`,`hora_final`) VALUES
+(1,'alex','12:30:00','17:30:00'),
+(1,'pepe','16:30:00','18:50:00'),
+(2,'alex','15:15:00','18:00:00'),
+(2,'pepe','14:15:00','21:15:00'),
+(3,'alex','11:00:00','16:00:00'),
+(4,'pepe','10:00:00','20:00:00');

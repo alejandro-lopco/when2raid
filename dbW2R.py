@@ -102,7 +102,7 @@ def checkLogin(username, passwd):
         except NameError:
             print("Fallo en conexión a la BBDD.")            
 
-def addUsr(username, passwd, fullName):
+def addUsr(username, passwd):
     try:
         # Nos conectamos a la base de datos
         cnx = sql.connect(
@@ -113,9 +113,9 @@ def addUsr(username, passwd, fullName):
         )
         if cnx is not None:
             cursor = cnx.cursor()
-            query = "INSERT INTO usuarios VALUES (%s,%s,%s);"
+            query = "INSERT INTO usuarios VALUES (%s,%s);"
 
-            cursor.execute(query,(username,passwd,fullName))
+            cursor.execute(query,(username,passwd))
 
             cnx.commit()
 
@@ -156,6 +156,8 @@ def addActividad(
     horaFinal
 ):
     try:
+        CUR_CONF = ini.getCnf()
+        ID_USER = CUR_CONF['USER']['default']
         # Nos conectamos a la base de datos
         cnx = sql.connect(
             host    =CONF['DATABASE']['hostname'],
@@ -166,7 +168,7 @@ def addActividad(
 
         cursor  = cnx.cursor()
 
-        ID_USER = CONF['USER']['default']
+
 
         qryAct  = "INSERT INTO actividades (nombre_actividad,descripcion_actividad,tipo_actividad,passwd_actividad,fecha,autor) VALUES (%s,%s,%s,%s,%s,%s)"
         cursor.execute(qryAct,(
@@ -546,8 +548,9 @@ def updateHorasDisponibles(
 
         cursor  = cnx.cursor(buffered=True)
 
-        qryHoras    = "SELECT id_usuario,hora_inicio,hora_final FROM horas_disponibles WHERE id_actividad = %s AND id_usuario = %s;"
-        rslt = cursor.execute(qryHoras,(actID,user))
+        qryHoras    = "SELECT id_usuario,hora_inicio,hora_final FROM horas_disponibles WHERE id_actividad = (%s) AND id_usuario = (%s);"
+        cursor.execute(qryHoras,(actID,user))
+        rslt = cursor.fetchone()
         
         if rslt is None:
             qryNewHoras = 'INSERT INTO horas_disponibles (id_actividad,id_usuario,hora_inicio,hora_final) VALUES (%s,%s,%s,%s)'

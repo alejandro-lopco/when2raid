@@ -31,8 +31,8 @@ def setupUserGUI():
         [sg.Input(key='-USER-')],
         [sg.Text("Contraseña")],
         [sg.Input(key='-PASS-',password_char='*')],
-        [sg.Text("Nombre Completo")],
-        [sg.Input(key='-FULLNAME-')],
+        [sg.Text("Confirmar contraseña")],
+        [sg.Input(key='-PASSCONF-')],
         [sg.Button('Crear Usuario')],
         [sg.Text('',key='-CONF-')] # Muestra de mensajes 
     ]
@@ -83,12 +83,13 @@ def main():
 
                 if eventUser == 'Crear Usuario' and valuesUser['-PASS-'] != '':
                     if db.checkUser(valuesUser['-USER-']) is False:
-                        userHash = db.passwdHash(valuesUser['-PASS-'])
+                        if valuesUser['-PASS-'] == valuesUser['-PASSCONF-']:
+                            userHash = db.passwdHash(valuesUser['-PASS-'])
 
-                        if db.addUsr(valuesUser['-USER-'],userHash,valuesUser['-FULLNAME-']):
-                            windowUser['-CONF-'].update('Usuario creado correctamente')
-                        else:
-                            windowUser['-CONF-'].update('Error en la creación del usuario')
+                            if db.addUsr(valuesUser['-USER-'],userHash):
+                                windowUser['-CONF-'].update('Usuario creado correctamente')
+                            else:
+                                windowUser['-CONF-'].update('Error en la creación del usuario')
                     else:
                         windowUser['-CONF-'].update('Usuario ya existente')
                     
