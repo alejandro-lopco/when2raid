@@ -26,7 +26,7 @@ def setupMainGUI():
     ]
 
     HOME_DEF = [
-        [sg.Text(f'Bienvenido {CONFIG['USER']['default']}',
+        [sg.Text(f'Bienvenido/a {CONFIG['USER']['default']}',
                  font=('Arial bold',22),
                  pad=(50,10),
                  expand_x=True)],

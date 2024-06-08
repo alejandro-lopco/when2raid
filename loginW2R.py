@@ -32,7 +32,7 @@ def setupUserGUI():
         [sg.Text("Contraseña")],
         [sg.Input(key='-PASS-',password_char='*')],
         [sg.Text("Confirmar contraseña")],
-        [sg.Input(key='-PASSCONF-')],
+        [sg.Input(key='-PASSCONF-',password_char='*')],
         [sg.Button('Crear Usuario')],
         [sg.Text('',key='-CONF-')] # Muestra de mensajes 
     ]

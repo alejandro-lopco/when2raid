@@ -8,6 +8,7 @@ CONF = ini.getCnf()
 global cnx
 
 def loginDB():
+    CONF = ini.getCnf()
     try:
         # Nos conectamos a la base de datos
         cnx = sql.connect(

@@ -40,8 +40,8 @@ CREATE TABLE log_actividades (
 ) ENGINE=INNODB;
 CREATE TABLE log_usuarios (
     id_log INT AUTO_INCREMENT PRIMARY KEY,
-    nombre_usuario VARCHAR(16) DEFAULT USER(),
-    fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP()
+    nombre_usuario VARCHAR(16),
+    fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=INNODB;
 -- Creación de triggers
 DELIMITER //
